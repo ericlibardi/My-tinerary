@@ -1,0 +1,65 @@
+
+.Header img {
+    height: 120px;
+}
+.Header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 140px;
+    background-color: white;
+}
+.landFullPage {
+    background-image: url("./images/images.jpg");
+    background-size: cover;
+}
+.halfPage{
+    max-width: 360px;
+    margin: auto;
+    background-image: linear-gradient(to right, rgba(255, 255, 255, 0.1) 5%, rgba(255, 255, 255, 0.6) 50%, rgba(255, 255, 255, 0.3) 5% ) 
+}
+.landBody {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;    
+}
+.landBody h4 {
+    font-style: italic;
+    margin-block-end: 3.3rem;
+    padding: 0 10px;
+}
+.landBody img {
+    height: 120px;
+}
+.landBody h2 {
+    line-height: 0px;
+    margin-block-end: 0.2rem;
+    text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.39);
+}
+.landBody p {
+    margin-block-start: 2.9rem;
+    
+}
+.landLogin {
+    display: flex;
+    max-width: 300px;
+}
+.landLogin p{
+    padding: 5px 10px;
+    width: 180px;
+    margin-block-start: 1rem;
+    margin: 0 10px 10px 10px;
+    background-image: linear-gradient(rgb(19, 49, 94), rgb(7, 26, 54)) ;
+    border-radius: 10px 10px 0 0;
+    color: white;
+    box-shadow: 1px 1px 5px black;
+}
+.landFooter {
+    display: flex;
+    justify-content: center;
+}
+.landFooter img {
+    margin: 20px 10px 4px 10px;
+    height: 45px;
+}
