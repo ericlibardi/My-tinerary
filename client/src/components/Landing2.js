@@ -13,6 +13,30 @@ import squareImage from '../images/unnamed.png'
 
 export default class Landing2 extends Component {
         
+    constructor(props) {
+        super(props);
+        this.state = {
+            isFetching: false,
+            cities: [1],
+        };
+    }
+
+    componentDidMount() {
+        this.setState({...this.state, isFetching: true})
+         fetch('http://localhost:5000/cities/all', {
+             method: "GET",
+             mode: 'cors',
+             cache: 'default'
+         })
+         .then(response => response.json())
+         .then(result => {this.setState({cities: result,
+         isFetching: false})
+             this.setState({cities: result.sort((a,b) => a.name.localeCompare(b.name)  )
+             })
+         })
+         .catch(e => console.log(e))
+     }
+
     render() {
         const imageStyle ={
             width: "140px",
@@ -40,8 +64,8 @@ export default class Landing2 extends Component {
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse id="basic-navbar-nav">
                     <Nav className="ml-auto">
-                        <Nav.Link href="#home" className="ml-auto font-weight-bold text-white">Home</Nav.Link>
-                        <Nav.Link href="#link" className="ml-auto font-weight-bold text-white">Cities</Nav.Link>
+                        <Nav.Link href="/" className="ml-auto font-weight-bold text-white">Home</Nav.Link>
+                        <Nav.Link href="/cities" className="ml-auto font-weight-bold text-white">Cities</Nav.Link>
                         {/* <NavDropdown title="Dropdown" id="basic-nav-dropdown">
                             <NavDropdown.Item href="#action/3.1">Action</NavDropdown.Item>
                             <NavDropdown.Item href="#action/3.2">Another action</NavDropdown.Item>
