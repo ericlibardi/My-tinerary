@@ -57,11 +57,11 @@ componentDidMount() {
     render () {
         console.log(this.state.filtCities)
 
-        const citiesList = this.state.filtCities.map((city) => 
-            <div className="mb-2 mx-2 card bg-dark text-white" style={{maxWidth: "90vh", height: "21vh"}}>
+        const citiesList = this.state.filtCities.map((city, index) => 
+            <div key={city._id} className="mb-2 mx-2 card bg-dark text-white" style={{maxWidth: "90vh", height: "21vh"}}>
                 <img className="card-img" src={city.image} alt={city.name} style={{width: "100%", height: "100%", objectFit: "cover"}}></img>
                 <div className="card-img-overlay d-flex justify-content-center align-items-center">
-                    <p className="card-title bg-success py-1" key={city._id} style={{textAlign: "center", width: "80%"}}>{city.name}</p>
+                    <p className="card-title bg-success py-1" style={{textAlign: "center", width: "80%"}}>{city.name}</p>
                 </div>
             </div>
         );
