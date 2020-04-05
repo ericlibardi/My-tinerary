@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import { Navbar, Nav, NavDropdown } from 'react-bootstrap'
+import { Navbar, Nav/*, NavDropdown */} from 'react-bootstrap'
 import Container from 'react-bootstrap/Container'
 //import Row from 'react-bootstrap/Row'
 //import Col from 'react-bootstrap/Col'
@@ -81,7 +81,9 @@ export default class Landing2 extends Component {
                     Find your perfect trip, designed by insiders who know and love their cities.
                     </p>
                 </div>
-                <img src={directImage} alt="Arrow" className="align-self-center"></img>
+                <a href="/cities" className="align-self-center">
+                    <img src={directImage} alt="Arrow" ></img>
+                </a>
             </Container>
             <Container style={{width: "310px"}}>
                 <h6 className="mt-4">Popular MYtineraries</h6>

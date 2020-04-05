@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import ReactDOM from 'react-dom'
+//import ReactDOM from 'react-dom'
 import './index.css'
 import { BrowserRouter, Route, Switch } from 'react-router-dom'
 import Landing from './components/Landing2'

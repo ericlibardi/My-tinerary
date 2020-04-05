@@ -14,14 +14,33 @@ class Cities extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            //isFetching: false,
+            //cities: [1],
             citFilter: "",
-            filtCities: []
+            filtCities: [1]
         };
     }
 
     componentDidMount() {
         this.props.fetchCities()        
     }
+
+/* componentDidMount() {
+   this.setState({...this.state, isFetching: true})
+    fetch('http://localhost:5000/cities/all', {
+        method: "GET",
+        mode: 'cors',
+        cache: 'default'
+    })
+    .then(response => response.json())
+    .then(result => {this.setState({cities: result,
+    isFetching: false})
+        this.setState({cities: result.sort((a,b) => a.name.localeCompare(b.name)  )
+        })
+        this.setState({filtCities: this.state.cities})
+    })
+    .catch(e => console.log(e))
+} */
 
     handleChange = (e) => {
         this.setState ({
@@ -42,36 +61,19 @@ class Cities extends Component {
         })
     }
     
-    fullfillCities = () => {
-        if (this.state.citFilter !== "") {
-            const citiesList = 
-            this.state.filtCities.map((city) =>
-            <div key={city._id} className="mb-2 mx-2 card bg-dark text-white" style={{maxWidth: "90vh", height: "21vh"}}>
-                <img className="card-img" src={city.image} alt={city.name} style={{width: "100%", height: "100%", objectFit: "cover"}}></img>
-                <div className="card-img-overlay d-flex justify-content-center align-items-center">
-                    <p className="card-title bg-success py-1" style={{textAlign: "center", width: "80%"}}>{city.name}</p>
-                </div>
-            </div>
-        );
-        return citiesList
-            
-        } else {
-            const citiesList = 
-            this.props.cities.map((city) =>
-            <div key={city._id} className="mb-2 mx-2 card bg-dark text-white" style={{maxWidth: "90vh", height: "21vh"}}>
-                <img className="card-img" src={city.image} alt={city.name} style={{width: "100%", height: "100%", objectFit: "cover"}}></img>
-                <div className="card-img-overlay d-flex justify-content-center align-items-center">
-                    <p className="card-title bg-success py-1" style={{textAlign: "center", width: "80%"}}>{city.name}</p>
-                </div>
-            </div>
-        );
-        return citiesList
-        }   
-    }
 
     render () {
 
         console.log(this.state.filtCities)
+
+        const citiesList = this.props.cities.map((city, index) => 
+            <div key={city._id} className="mb-2 mx-2 card bg-dark text-white" style={{maxWidth: "90vh", height: "21vh"}}>
+                <img className="card-img" src={city.image} alt={city.name} style={{width: "100%", height: "100%", objectFit: "cover"}}></img>
+                <div className="card-img-overlay d-flex justify-content-center align-items-center">
+                    <p className="card-title bg-success py-1" style={{textAlign: "center", width: "80%"}}>{city.name}</p>
+                </div>
+            </div>
+        );
 
         const popover = (
             <Popover id="popover-basic">
@@ -111,7 +113,7 @@ class Cities extends Component {
                 onChange={this.handleChange}></input>
             </div>
             <div className="d-flex flex-column align-items-center">
-            {this.fullfillCities()}
+            {citiesList}
             </div>
         </div>
     )}
