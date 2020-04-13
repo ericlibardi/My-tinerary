@@ -10,8 +10,11 @@ import logoImage from '../images/MYtineraryLogo.png'
 import loginImage from '../images/loginIcon.png'
 import directImage from '../images/world-icon.png'
 import squareImage from '../images/unnamed.png'
+import { fetchCities } from '../store/actions/cityActions';
+import PropTypes from 'prop-types'
+import { connect } from "react-redux";
 
-export default class Landing2 extends Component {
+class Landing2 extends Component {
         
     constructor(props) {
         super(props);
@@ -22,19 +25,7 @@ export default class Landing2 extends Component {
     }
 
     componentDidMount() {
-        this.setState({...this.state, isFetching: true})
-         fetch('http://localhost:5000/cities/all', {
-             method: "GET",
-             mode: 'cors',
-             cache: 'default'
-         })
-         .then(response => response.json())
-         .then(result => {this.setState({cities: result,
-         isFetching: false})
-             this.setState({cities: result.sort((a,b) => a.name.localeCompare(b.name)  )
-             })
-         })
-         .catch(e => console.log(e))
+        this.props.fetchCities()
      }
 
     render() {
@@ -89,78 +80,49 @@ export default class Landing2 extends Component {
                 <h6 className="mt-4">Popular MYtineraries</h6>
                 <Carousel >
                     <Carousel.Item>
-                        <img
-                        src={squareImage}
-                        alt="First slide"
-                        style={imageStyle}
-                        />
-                        <img
-                        src={squareImage}
-                        alt="First slide"
-                        style={imageStyle}
-                        />
-                        <img
-                        src={squareImage}
-                        alt="First slide"
-                        style={imageStyle}
-                        />
-                        <img
-                        src={squareImage}
-                        alt="First slide"
-                        style={imageStyle}
-                        />
+                        {
+                            this.props.cities.map((city, index) => {
+                                if (index <= 3) {
+                                const fourCities =
+                                <img
+                                src={city.image}
+                                alt={city.name}
+                                style={imageStyle}
+                                ></img>
+                                return fourCities
+                                }
+                            })
+                        }
                     </Carousel.Item>
                     <Carousel.Item>
-                        <img
-                        className="w-50"
-                        src={squareImage}
-                        alt="First slide"
-                        style={imageStyle}
-                        />
-                        <img
-                        className="w-50"
-                        src={squareImage}
-                        alt="First slide"
-                        style={imageStyle}
-                        />
-                        <img
-                        className="w-50"
-                        src={squareImage}
-                        alt="First slide"
-                        style={imageStyle}
-                        />
-                        <img
-                        className="w-50"
-                        src={squareImage}
-                        alt="First slide"
-                        style={imageStyle}
-                        />
+                    {
+                            this.props.cities.map((city, index) => {
+                                if (index >= 4 && index <= 7) {
+                                const fourCities =
+                                <img
+                                src={city.image}
+                                alt={city.name}
+                                style={imageStyle}
+                                ></img>
+                                return fourCities
+                                }
+                            })
+                        }
                     </Carousel.Item>
                     <Carousel.Item>
-                        <img
-                        className="w-50"
-                        src={squareImage}
-                        alt="First slide"
-                        style={imageStyle}
-                        />
-                        <img
-                        className="w-50"
-                        src={squareImage}
-                        alt="First slide"
-                        style={imageStyle}
-                        />
-                        <img
-                        className="w-50"
-                        src={squareImage}
-                        alt="First slide"
-                        style={imageStyle}
-                        />
-                        <img
-                        className="w-50"
-                        src={squareImage}
-                        alt="First slide"
-                        style={imageStyle}
-                        />
+                    {
+                            this.props.cities.map((city, index) => {
+                                if (index >= 8 && index <= 11) {
+                                const fourCities =
+                                <img
+                                src={city.image}
+                                alt={city.name}
+                                style={imageStyle}
+                                ></img>
+                                return fourCities
+                                }
+                            })
+                        }
                     </Carousel.Item>
 
                 </Carousel>
@@ -169,3 +131,14 @@ export default class Landing2 extends Component {
         </div>
     )
 }}
+
+Landing2.propTypes = {
+    fetchCities: PropTypes.func.isRequired,
+    cities: PropTypes.array.isRequired,
+}
+
+const mapStateToProps = state => ({
+    cities: state.cities.items
+})
+
+export default connect(mapStateToProps, { fetchCities })(Landing2);

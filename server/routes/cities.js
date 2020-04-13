@@ -11,6 +11,16 @@ router.get('/all',
             .catch(err => console.log(err));
     });
 
+router.get('/:name',
+	(req, res) => {
+  		let cityRequested = req.params.name;
+  		cityModel.findOne({ name: cityRequested })
+			.then(city => {
+				res.send(city)
+			})
+			.catch(err => console.log(err));
+});
+
 router.post('/', (req, res) => {
     const newCity = new cityModel({
         name: req.body.name,

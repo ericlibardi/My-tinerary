@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-//import { render } from 'react-dom'
+import { Link } from 'react-router-dom'
 import { Navbar, Nav/*, NavDropdown */} from 'react-bootstrap'
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger'
 import Popover from 'react-bootstrap/Popover'
@@ -49,7 +49,11 @@ class Cities extends Component {
             <div key={city._id} className="mb-2 mx-2 card bg-dark text-white" style={{maxWidth: "90vh", height: "21vh"}}>
                 <img className="card-img" src={city.image} alt={city.name} style={{width: "100%", height: "100%", objectFit: "cover"}}></img>
                 <div className="card-img-overlay d-flex justify-content-center align-items-center">
-                    <p className="card-title bg-success py-1" style={{textAlign: "center", width: "80%"}}>{city.name}</p>
+                <Link to ={{
+                        pathname: '/itineraries',
+                        state: {
+                            city: city}
+                    }} className="bg-success text-white py-1" style={{textAlign: "center", width: "80%"}}>{city.name}</Link>
                 </div>
             </div>
         );
@@ -61,7 +65,11 @@ class Cities extends Component {
             <div key={city._id} className="mb-2 mx-2 card bg-dark text-white" style={{maxWidth: "90vh", height: "21vh"}}>
                 <img className="card-img" src={city.image} alt={city.name} style={{width: "100%", height: "100%", objectFit: "cover"}}></img>
                 <div className="card-img-overlay d-flex justify-content-center align-items-center">
-                    <p className="card-title bg-success py-1" style={{textAlign: "center", width: "80%"}}>{city.name}</p>
+                    <Link to ={{
+                        pathname: '/itineraries',
+                        state: {
+                            city: city}
+                    }} className="bg-success text-white py-1" style={{textAlign: "center", width: "80%"}}>{city.name}</Link>
                 </div>
             </div>
         );
@@ -71,7 +79,7 @@ class Cities extends Component {
 
     render () {
 
-        console.log(this.state.filtCities)
+        console.log(this.props.cities)
 
         const popover = (
             <Popover id="popover-basic">
