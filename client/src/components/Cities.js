@@ -111,7 +111,7 @@ class Cities extends Component {
             </Navbar>
             <div className="my-3 mx-2 d-flex flex-column align-items-center">
                 <div style={{width: "100%", maxWidth: "590px"}}>
-                    <p style={{marginBottom: "1px"}} className="font-weight-bold">Filter our current cities</p>
+                    <p className="font-weight-bold mb-1">Filter our current cities</p>
                 </div>
                 <input style={{maxWidth: "590px"}} type="text" 
                 className="form-control" placeholder="Search" 

@@ -1,8 +1,6 @@
 import React, {Component} from 'react'
 import { Navbar, Nav/*, NavDropdown */} from 'react-bootstrap'
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger'
-import Accordion from 'react-bootstrap/Accordion'
-import Card from 'react-bootstrap/Card'
 import Popover from 'react-bootstrap/Popover'
 import loginImage from '../images/loginIcon.png'
 import rightArrow from '../images/right-arrow.png'
@@ -11,9 +9,8 @@ import { connect } from "react-redux";
 import PropTypes from 'prop-types'
 import { fetchItineraries } from '../store/actions/itineraryActions';
 
-import Carousel from "react-multi-carousel";
-import "react-multi-carousel/lib/styles.css";
-
+import { CarouselProvider, Slider, Slide, ButtonBack, ButtonNext } from 'pure-react-carousel'; //https://www.npmjs.com/package/pure-react-carousel
+import 'pure-react-carousel/dist/react-carousel.es.css';
 
 class Itineraries extends Component {
     constructor(props) {
@@ -33,27 +30,6 @@ class Itineraries extends Component {
         }
 
     fillItineraries = () => {
-        const responsive = {
-            superLargeDesktop: {
-              // the naming can be any, depends on you.
-              breakpoint: { max: 4000, min: 3000 },
-              items: 3
-            },
-            desktop: {
-              breakpoint: { max: 3000, min: 1024 },
-              items: 3
-            },
-            tablet: {
-              breakpoint: { max: 1024, min: 464 },
-              items: 4
-            },
-            mobile: {
-              breakpoint: { max: 464, min: 0 },
-              items: 3
-            }
-          };
-
-
         const itinerariesList =
         this.props.itineraries.map((itinerary) =>
         <div key={itinerary._id} className="my-1 mx-2" style={{border: "solid 1px rgb(34, 34, 34)", 
@@ -81,35 +57,49 @@ class Itineraries extends Component {
                 </div>
             </div>
             <div>
-                <div id={"more" + itinerary._id} style={{display: "none"}}>
+                <div id={"more" + itinerary._id} style={{display: "none", width: "100%"}}>
                     <h6 className="ml-2 my-1">Activities</h6>
-                    
-                    <Carousel  
-                    responsive = {responsive}
-                    centerMode={true}
-                    containerClass="carousel-container"
-                    dotListClass="custom-dot-list-style"
-                    itemClass="carousel-item-padding-40-px"
-                    >
-                    {itinerary.activities.map((activity, index)=>
+                    <div className="d-flex justify-content-center">
+
+                    <CarouselProvider
+                        className="mx-2"
+                        naturalSlideWidth={100}
+                        naturalSlideHeight={20}
+                        totalSlides={itinerary.activities.length / 3}
+                        step={1}
                         
-                        <div key={index} className="mb-2 mx-2 card bg-dark text-white" style={{width: "15vh", height: "15vh"}}>
+                    >
+                        
+                        <Slider>
+                        {itinerary.activities.map((activity, index)=> {
+                        const activities =
+                        
+                        <Slide index={index} key={index} className="card mr-1" style={{width: "16vh", height: "16vh"}}>
                             <img className="card-img" src={activity.image} alt={activity.title} style={{width: "100%", height: "100%", objectFit: "cover"}}></img>
                             <div className="card-img-overlay d-flex justify-content-center align-items-center">
-                                <p className="text-white py-1 mb-0" style={{textAlign: "center", width: "100%"}}>{activity.title}</p>
+                                <p className="text-white mb-0" style={{fontSize: "14px", textAlign: "center", width: "100%"}}>{activity.title}</p>
                             </div>
-                        </div>
-                         )}
-          </Carousel>
+                        </Slide>
                         
-                    
+                        return activities 
+                        })}
+                        </Slider>
+                        <div className="d-flex justify-content-around mt-1">
+                        <ButtonBack><img src={rightArrow} alt="left_arrow" style={{width: "25px", transform: "rotate(180deg)"}}></img></ButtonBack>
+                        <ButtonNext><img src={rightArrow} alt="righ_arrow" style={{width: "25px"}}></img></ButtonNext>
+                        </div>
+
+
+                    </CarouselProvider>
+
+                    </div>
                     <h6 className="ml-2 mt-4 mb-1">Comments</h6>
                     <input style={{width: "85%", display: "inline-block"}} type="text" 
                     className="form-control ml-2 mb-3" placeholder="Write comment" 
                     ></input>
                     <img src={rightArrow} alt="rightArrow" style={{width: "8%"}}></img>
                 </div>
-                <div className="bg-warning text-center" onClick={() => this.myFunction(itinerary._id)} style={{fontSize: "13px"}}>
+                <div className="bg-warning text-center" onClick={() => this.myFunction(itinerary)} style={{fontSize: "13px"}}>
                     <p className="my-1" id={"viewMore" + itinerary._id} style={{display: "inline-block"}}>View More</p>
                     <p className="my-1" id={"close" + itinerary._id} style={{display: "none"}}>Close</p>
                 </div>
@@ -119,13 +109,11 @@ class Itineraries extends Component {
         )
         return itinerariesList
         }
-    myFunction = (id) => {
-        this.setState({
-
-        })
-        var viewMore = document.getElementById("viewMore" + id);
-        var close = document.getElementById("close" + id)
-        var moreText = document.getElementById("more" + id);
+    myFunction = (itinerary) => {
+        
+        var viewMore = document.getElementById("viewMore" + itinerary._id);
+        var close = document.getElementById("close" + itinerary._id)
+        var moreText = document.getElementById("more" + itinerary._id);
         if (viewMore.style.display === "none") {
             close.style.display = "none";
             viewMore.style.display = "inline-block"
@@ -135,15 +123,10 @@ class Itineraries extends Component {
             viewMore.style.display = "none"
             moreText.style.display = "inline-block";
           }
-
-    }
-    loadCarousel = () => {
-        
-          
-    }
+                }
 
     render() {
-        console.log(this.props.itineraries)
+        console.log(this.props.itineraries.length)
       
         const popover = (
             <Popover id="popover-basic">
