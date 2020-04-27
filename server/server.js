@@ -11,6 +11,9 @@ mongoose.connect(db, { useNewUrlParser: true, useCreateIndex: true, useUnifiedTo
 
 const bodyParser = require("body-parser");
 const cors = require("cors");
+const passport = require('./passport');
+
+app.use(passport.initialize());
 
 app.use(bodyParser.json());
 app.use(

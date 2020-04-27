@@ -1,8 +1,11 @@
 import React, { Component } from 'react'
+import PropTypes from 'prop-types'
+import {connect} from 'react-redux'
 import { Navbar, Nav/*, NavDropdown */} from 'react-bootstrap'
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger'
 import Popover from 'react-bootstrap/Popover'
 import loginImage from '../images/loginIcon.png'
+import { createUser } from '../store/actions/userActions';
 
 class SignPage extends Component {
     constructor(props) {
@@ -27,20 +30,36 @@ class SignPage extends Component {
     }
 
     handleSubmit(event) {
-        alert('Thank you for registering');
+        const email = this.state.email;
+        const password = this.state.password;
+        const image = this.state.urlPicture;
+
         event.preventDefault();
+        
+        /* const user = JSON.stringify({
+            
+            email: this.state.email,
+            password: this.state.password,
+            image: this.state.urlPicture
+        }) */
+    
+        this.props.createUser(
+            email, password, image
+        )
+
     }
 
     render() {
         console.log(this.state.email)
         console.log(this.state.password)
         console.log(this.state.urlPicture)
-        const popover = (
-            <Popover id="popover-basic">
+
+          const popover = (
+            <Popover id="popover-basic"> 
               <Popover.Content>
-                <a href="url">Create Account</a>
+                <a href="/signin">Create Account</a>
                 <br></br>
-                <a href="url">Login</a>
+                <a href="/login">Login</a>
               </Popover.Content>
             </Popover>
           );
@@ -96,4 +115,8 @@ class SignPage extends Component {
     }
 }
 
-export default SignPage
+SignPage.propTypes = {
+    createUser: PropTypes.func.isRequired
+}
+
+export default connect(null, { createUser})(SignPage)

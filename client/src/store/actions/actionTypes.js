@@ -1,2 +1,4 @@
 export const FETCH_CITIES = 'FETCH_CITIES'
 export const FETCH_ITINERARIES = 'FETCH_ITINERARIES'
+export const FECTH_USER = 'FETCH_USER'
+export const POST_USER = 'POST_USER'

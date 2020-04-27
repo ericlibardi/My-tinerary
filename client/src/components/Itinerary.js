@@ -131,11 +131,12 @@ class Itineraries extends Component {
         const popover = (
             <Popover id="popover-basic">
               <Popover.Content>
-                <a href="url">Create Account</a>
+                <a href="/signin">Create Account</a>
                 <br></br>
-                <a href="url">Login</a>
+                <a href="/login">Login</a>
               </Popover.Content>
-            </Popover>)
+            </Popover>
+          );
 
 
         return (
