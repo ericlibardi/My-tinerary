@@ -11,9 +11,6 @@ mongoose.connect(db, { useNewUrlParser: true, useCreateIndex: true, useUnifiedTo
 
 const bodyParser = require("body-parser");
 const cors = require("cors");
-const passport = require('./passport');
-
-app.use(passport.initialize());
 
 app.use(bodyParser.json());
 app.use(
@@ -21,11 +18,17 @@ app.use(
     extended: true
   })
 );
+
 app.use(cors());
+
 
 app.use('/cities', require('./routes/cities'))
 app.use('/itineraries', require('./routes/itinerary'))
 app.use('/users', require('./routes/user'))
+
+const passport = require('./passport');
+
+app.use(passport.initialize());
 
 app.listen(port, () => {
   console.log("Server is running on " + port + "port");

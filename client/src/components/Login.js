@@ -1,9 +1,13 @@
 import React, { Component } from 'react'
 import { Navbar, Nav/*, NavDropdown */} from 'react-bootstrap'
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger'
+import PropTypes from 'prop-types'
+import {connect} from 'react-redux'
 import Popover from 'react-bootstrap/Popover'
 import loginImage from '../images/loginIcon.png'
 import loginGoogle from '../images/btn_google_signin_dark_normal_web.png'
+
+import { loginUser } from '../store/actions/userActions';
 
 class Login extends Component {
     constructor(props) {
@@ -33,12 +37,12 @@ class Login extends Component {
 
         if (email === '' || password === '') {
             alert("missing email or password")
-        } else {
-            /* this.props.createUser(
+        } else { 
+            this.props.loginUser(
                 email, password
             )
- */     }        
 
+        }
     }
 
     render() {
@@ -98,4 +102,8 @@ class Login extends Component {
     }
 }
 
-export default Login
+Login.propTypes = {
+    loginUser: PropTypes.func.isRequired
+}
+
+export default  connect(null, { loginUser})(Login)

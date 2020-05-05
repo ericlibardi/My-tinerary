@@ -10,6 +10,8 @@ import directImage from '../images/world-icon.png'
 import { fetchCities } from '../store/actions/cityActions';
 import PropTypes from 'prop-types'
 import { connect } from "react-redux";
+import { storeUser } from '../store/actions/loginActions'
+import { userLogedin } from '../store/actions/userActions'
 
 class Landing2 extends Component {
         
@@ -18,14 +20,70 @@ class Landing2 extends Component {
         this.state = {
             isFetching: false,
             cities: [1],
+            user: "",
         };
+        this.storeToken = this.storeToken.bind(this);
     }
 
     componentDidMount() {
         this.props.fetchCities()
+        this.storeToken()
+        this.props.userLogedin()
      }
 
+     storeToken = () => {
+        const token = this.props.location.search.slice(this.props.location.search.indexOf("=")+1)
+        if(token !== "")
+        this.props.storeUser(token)
+
+    }
+
+    fillPopOver = () => {
+        if (this.props.user.length === 0) {
+             const popoverContent = 
+            <div>
+            <a href="/signin">Create Account</a>
+            <br></br>
+            <a href="/login">Login</a>
+            </div>
+            return popoverContent
+
+        }else {
+            const popoverContent = 
+            <div>
+            <a href="/signin">Logout</a>
+            </div>
+            return popoverContent
+        }
+        }
+    fillLogedDet = () => {
+        if (this.props.user.length === 0) {
+            const logedDetails = 
+                <div>
+                <img src={loginImage} alt="Login"></img>
+                </div>
+            return logedDetails
+        } else {
+            const logedDetails = 
+                <div className="d-flex align-items-center">
+                <img style={{width: "26px", borderRadius: "50%"}} src={this.props.user.image} alt="Logout"></img>
+                </div>
+            return logedDetails
+        }
+    }
+
+    fillEmalDetail = () => {
+        if (this.props.user.length === 0) {
+            return
+        } else {
+            const email = 
+            <p className="mb-0 ml-2" style={{fontSize: "15px"}}>{this.props.user.username}</p>
+            return email
+        }
+    }
+
     render() {
+        console.log(this.props.user)
         const imageStyle ={
             width: "140px",
             height: "95px",
@@ -34,11 +92,8 @@ class Landing2 extends Component {
 
         const popover = (
             <Popover id="popover-basic">
-              
               <Popover.Content>
-                <a href="/signin">Create Account</a>
-                <br></br>
-                <a href="/login">Login</a>
+                {this.fillPopOver()}
               </Popover.Content>
             </Popover>
           );
@@ -46,9 +101,12 @@ class Landing2 extends Component {
     return (
         <div>
             <Navbar bg="secondary" expand="lg">
+            <Navbar.Brand className="d-flex">
                 <OverlayTrigger trigger="click" placement="bottom" overlay={popover}>
-                    <img src={loginImage} alt="Login"></img> 
+                    {this.fillLogedDet()}
                 </OverlayTrigger>
+                 {this.fillEmalDetail()}
+                </Navbar.Brand>
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse id="basic-navbar-nav">
                     <Nav className="ml-auto">
@@ -138,10 +196,13 @@ class Landing2 extends Component {
 Landing2.propTypes = {
     fetchCities: PropTypes.func.isRequired,
     cities: PropTypes.array.isRequired,
+    storeUser: PropTypes.func.isRequired,
+    userLogedin: PropTypes.func.isRequired
 }
 
 const mapStateToProps = state => ({
-    cities: state.cities.items
+    cities: state.cities.items,
+    user: state.user.items
 })
 
-export default connect(mapStateToProps, { fetchCities })(Landing2);
+export default connect(mapStateToProps, { fetchCities, storeUser, userLogedin })(Landing2);

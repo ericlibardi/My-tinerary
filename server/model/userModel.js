@@ -6,9 +6,18 @@ const userSchema = new mongoose.Schema({
         required: true,
         unique: true
     },
+    oAuth: {
+        required: false
+    },
     password: {
         type: String,
-        required: true
+        required: function validate() {
+            if (this.oAuth) {
+                return false;
+            } else {
+                return true;
+            }
+        }
     },
     image: {
         type: String

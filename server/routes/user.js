@@ -5,6 +5,8 @@ const bcrypt = require("bcrypt")
 const { check, validationResult } = require('express-validator');
 const passport = require('passport')
 
+const cors = require("cors");
+
 const key = require("../keys");
 const jwt = require("jsonwebtoken");
 
@@ -34,15 +36,41 @@ router.post('/register', [
     })
     newUser.save()
       .then(user => {
-      res.send(user)
+      //res.send(user)
+
+      const payload = {
+        id: user.id,
+        username: user.email,
+        image: user.image
+      }
+      const options = { expiresIn: 2592000 };
+            jwt.sign(payload,
+              key.secretOrKey,
+             options, (err, token) => {
+                if (err) {
+                    res.json({
+                        success: false,
+                        token: "There was an error"
+                    });
+                    
+                }
+                else {
+                    console.log(token);
+                    res.json({
+                        success: true,
+                        token: token
+                    });
+                }
+            });
+
       })
       .catch(err => {
       res.status(500).send("Server error" + err)}) 
 })
 });
 
-router.post('/login', async(req,res) =>{
-
+router.post('/login', cors(), async(req,res) =>{
+    console.log("login route")
     try {
       let user = await userModel.findOne({ email: req.body.email })
         if (!user) {
@@ -58,7 +86,6 @@ router.post('/login', async(req,res) =>{
             username: user.email,
             image: user.image
         };
-
         const options = { expiresIn: 2592000 };
             jwt.sign(payload,
               key.secretOrKey,
@@ -68,6 +95,7 @@ router.post('/login', async(req,res) =>{
                         success: false,
                         token: "There was an error"
                     });
+                    
                 }
                 else {
                     console.log(token);
@@ -99,8 +127,46 @@ router.get( "/",
 );
 
 router.get("/googlelogin", 
-  passport.authenticate('google', { scope: ['profile'] }))
+  passport.authenticate('google', { scope: ['profile','email'] }))
 
-router.get("/googleresponse")
+router.get("/googleresponse", 
+  passport.authenticate('google', { session: false }),
+  async(req, res) => {
+    try {
+        console.log(req.user)
+
+           const payload = {
+            id: req.user.id,
+            username: req.user.email,
+            image: req.user.image
+        };
+
+        const options = { expiresIn: 2592000 };
+            jwt.sign(payload,
+              key.secretOrKey,
+             options, (err, token) => {
+              res.redirect(`http://localhost:3000/?code=${token}`);
+                if (err) {
+                    res.json({
+                        success: false,
+                        token: "There was an error"
+                    });
+                }
+                else {
+                    console.log(token);
+                    res.json({
+                        success: true,
+                        token: token
+                    });
+                }
+            });
+
+        }
+    catch (err) {
+      console.error(err.message);
+        res.status(500).send('Server error')
+    }
+
+  })
 
 module.exports = router

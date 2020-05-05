@@ -8,6 +8,7 @@ import rightArrow from '../images/right-arrow.png'
 import { connect } from "react-redux";
 import PropTypes from 'prop-types'
 import { fetchItineraries } from '../store/actions/itineraryActions';
+import { userLogedin } from '../store/actions/userActions'
 
 import { CarouselProvider, Slider, Slide, ButtonBack, ButtonNext } from 'pure-react-carousel'; //https://www.npmjs.com/package/pure-react-carousel
 import 'pure-react-carousel/dist/react-carousel.es.css';
@@ -16,7 +17,8 @@ class Itineraries extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            city: []
+            city: [],
+            user: "",
         }
     }
     componentDidMount() {
@@ -27,6 +29,7 @@ class Itineraries extends Component {
         this.setState ({
             city: this.props.location.state.city
         })
+        this.props.userLogedin()
         }
 
     fillItineraries = () => {
@@ -123,7 +126,52 @@ class Itineraries extends Component {
             viewMore.style.display = "none"
             moreText.style.display = "inline-block";
           }
-                }
+}
+
+fillPopOver = () => {
+    if (this.props.user.length === 0) {
+         const popoverContent = 
+        <div>
+        <a href="/signin">Create Account</a>
+        <br></br>
+        <a href="/login">Login</a>
+        </div>
+        return popoverContent
+
+    }else {
+        const popoverContent = 
+        <div>
+        <a href="/signin">Logout</a>
+        </div>
+        return popoverContent
+    }
+    }
+fillLogedDet = () => {
+    if (this.props.user.length === 0) {
+        const logedDetails = 
+            <div>
+            <img src={loginImage} alt="Login"></img>
+            </div>
+        return logedDetails
+    } else {
+        const logedDetails = 
+            <div className="d-flex align-items-center">
+            <img style={{width: "26px", borderRadius: "50%"}} src={this.props.user.image} alt="Logout"></img>
+            </div>
+        return logedDetails
+    }
+}
+
+fillEmalDetail = () => {
+    if (this.props.user.length === 0) {
+        return
+    } else {
+        const email = 
+        <p className="mb-0 ml-2" style={{fontSize: "15px"}}>{this.props.user.username}</p>
+        return email
+    }
+}
+    
 
     render() {
         console.log(this.props.itineraries.length)
@@ -131,9 +179,7 @@ class Itineraries extends Component {
         const popover = (
             <Popover id="popover-basic">
               <Popover.Content>
-                <a href="/signin">Create Account</a>
-                <br></br>
-                <a href="/login">Login</a>
+                {this.fillPopOver()}
               </Popover.Content>
             </Popover>
           );
@@ -142,9 +188,12 @@ class Itineraries extends Component {
         return (
             <div>
                 <Navbar bg="secondary" expand="lg">
-                    <OverlayTrigger trigger="click" placement="bottom" overlay={popover}>
-                        <img src={loginImage} alt="Login"></img> 
-                    </OverlayTrigger>
+                <Navbar.Brand className="d-flex">
+                <OverlayTrigger trigger="click" placement="bottom" overlay={popover}>
+                    {this.fillLogedDet()}
+                </OverlayTrigger>
+                 {this.fillEmalDetail()}
+                </Navbar.Brand>
                     <Navbar.Toggle aria-controls="basic-navbar-nav" />
                     <Navbar.Collapse id="basic-navbar-nav">
                         <Nav className="ml-auto">
@@ -187,10 +236,12 @@ class Itineraries extends Component {
 Itineraries.propTypes = {
     fetchItineraries: PropTypes.func.isRequired,
     itineraries: PropTypes.array.isRequired,
+    userLogedin: PropTypes.func.isRequired
 }
 
 const mapStateToProps = state => ({
-    itineraries: state.itineraries.items
+    itineraries: state.itineraries.items,
+    user: state.user.items
 })
 
-export default connect(mapStateToProps, { fetchItineraries })(Itineraries);
+export default connect(mapStateToProps, { fetchItineraries, userLogedin })(Itineraries);

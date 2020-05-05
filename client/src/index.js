@@ -11,11 +11,21 @@ import { composeWithDevTools } from "redux-devtools-extension";
 import { createStore, applyMiddleware } from "redux";
 import { Provider } from "react-redux";
 import thunk from "redux-thunk";
+import setToken from './utils/setToken'
+import { getUser } from './store/actions/userActions'
 
 const store = createStore(
     rootReducer,
-    composeWithDevTools(applyMiddleware(thunk))
+    composeWithDevTools(applyMiddleware(thunk)),
   );
+
+  if (localStorage.token) {
+    setToken(localStorage.token)
+    store.dispatch(
+      getUser()
+    )
+  }
+
   ReactDOM.render(
     <Provider store={store}>
       <App />

@@ -1,5 +1,6 @@
 import React, {Component} from 'react'
 import { Link } from 'react-router-dom'
+
 import { Navbar, Nav/*, NavDropdown */} from 'react-bootstrap'
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger'
 import Popover from 'react-bootstrap/Popover'
@@ -8,19 +9,24 @@ import loginImage from '../images/loginIcon.png'
 import { connect } from "react-redux";
 import PropTypes from 'prop-types'
 import { fetchCities } from '../store/actions/cityActions';
+import { userLogedin } from '../store/actions/userActions'
 
 class Cities extends Component {
     
-    constructor(props) {
+constructor(props) {
         super(props);
         this.state = {
             citFilter: "",
-            filtCities: []
+            filtCities: [],
+            loggedin: false,
+            token: ""
         };
     }
 
     componentDidMount() {
-        this.props.fetchCities()        
+        this.props.fetchCities() 
+        this.props.userLogedin() 
+     
     }
 
     handleChange = (e) => {
@@ -77,26 +83,72 @@ class Cities extends Component {
         }   
     }
 
+    fillPopOver = () => {
+        if (this.props.user.length === 0) {
+             const popoverContent = 
+            <div>
+            <a href="/signin">Create Account</a>
+            <br></br>
+            <a href="/login">Login</a>
+            </div>
+            return popoverContent
+
+        }else {
+            const popoverContent = 
+            <div>
+            <a href="/signin">Logout</a>
+            </div>
+            return popoverContent
+        }
+        }
+    fillLogedDet = () => {
+        if (this.props.user.length === 0) {
+            const logedDetails = 
+                <div>
+                <img src={loginImage} alt="Login"></img>
+                </div>
+            return logedDetails
+        } else {
+            const logedDetails = 
+                <div className="d-flex align-items-center">
+                <img style={{width: "26px", borderRadius: "50%"}} src={this.props.user.image} alt="Logout"></img>
+                </div>
+            return logedDetails
+        }
+    }
+
+    fillEmalDetail = () => {
+        if (this.props.user.length === 0) {
+            return
+        } else {
+            const email = 
+            <p className="mb-0 ml-2" style={{fontSize: "15px"}}>{this.props.user.username}</p>
+            return email
+        }
+    }
+
+
     render () {
 
-        console.log(this.props.cities)
+        console.log(this.props.location.search.slice(this.props.location.search.indexOf("=")+1))
 
         const popover = (
             <Popover id="popover-basic">
               
               <Popover.Content>
-                <a href="/signin">Create Account</a>
-                <br></br>
-                <a href="/login">Login</a>
+                {this.fillPopOver()}
               </Popover.Content>
             </Popover>
           );
     return (
         <div>
             <Navbar bg="secondary" expand="lg">
+            <Navbar.Brand className="d-flex">
                 <OverlayTrigger trigger="click" placement="bottom" overlay={popover}>
-                    <img src={loginImage} alt="Login"></img> 
+                    {this.fillLogedDet()}
                 </OverlayTrigger>
+                 {this.fillEmalDetail()}
+                </Navbar.Brand>
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse id="basic-navbar-nav">
                     <Nav className="ml-auto">
@@ -129,10 +181,12 @@ class Cities extends Component {
 Cities.propTypes = {
     fetchCities: PropTypes.func.isRequired,
     cities: PropTypes.array.isRequired,
+    userLogedin: PropTypes.func.isRequired
 }
 
 const mapStateToProps = state => ({
-    cities: state.cities.items
+    cities: state.cities.items,
+    user: state.user.items
 })
 
-export default connect(mapStateToProps, { fetchCities })(Cities);
+export default connect(mapStateToProps, { fetchCities, userLogedin })(Cities);
