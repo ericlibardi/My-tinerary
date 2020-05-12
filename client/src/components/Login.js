@@ -20,6 +20,10 @@ class Login extends Component {
         this.handleSubmit = this.handleSubmit.bind(this)
     }
 
+componentDidUpdate() {
+   this.checkUser()
+}
+
     handleChange(event) {
         const value = event.target.value;
         const name = event.target.name;
@@ -41,12 +45,19 @@ class Login extends Component {
             this.props.loginUser(
                 email, password
             )
+            this.props.history.push("/")
+        } 
+    }
 
+    checkUser = async() => {
+        const userStatus = await this.props.user.logedin
+        console.log(userStatus)
+        if (userStatus === true) {
+            this.props.history.push("/")
         }
     }
 
     render() {
-
         const popover = (
             <Popover id="popover-basic">
               
@@ -106,4 +117,8 @@ Login.propTypes = {
     loginUser: PropTypes.func.isRequired
 }
 
-export default  connect(null, { loginUser})(Login)
+const mapStateToProps = state => ({
+    user: state.user.items
+})
+
+export default  connect(mapStateToProps, { loginUser})(Login)

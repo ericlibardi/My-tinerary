@@ -32,7 +32,9 @@ router.post('/register', [
     const newUser = new userModel({
         email: req.body.email,
         password: hash,
-        image: req.body.image
+        image: req.body.image,
+        logedin: true,
+        itineraries: ""
     })
     newUser.save()
       .then(user => {
@@ -80,7 +82,13 @@ router.post('/login', cors(), async(req,res) =>{
           if (!match) { 
             res.send({sucess: false, message: 'password do not match'})
            } 
-
+           console.log(user.id)
+           userModel.updateOne({_id: user.id}, { $set: {
+            logedin: true 
+          }}).then(res=> {
+            return res
+  
+          })
            const payload = {
             id: user.id,
             username: user.email,
@@ -137,7 +145,7 @@ router.get("/googleresponse",
 
            const payload = {
             id: req.user.id,
-            username: req.user.email,
+            email: req.user.email,
             image: req.user.image
         };
 
@@ -168,5 +176,30 @@ router.get("/googleresponse",
     }
 
   })
+
+router.post('/logout', async(req,res) => {
+  const userEmail = req.body.userEmail
+  console.log(userEmail)
+  userModel.updateOne({email: userEmail}, { $set: {
+  logedin: false 
+}}).then(res=> {
+  return res
+})
+})
+
+router.post('/itineraries', async(req,res) => {
+let user = await userModel.findOne({ email: req.body.email })
+const currentItineraries = user.itineraries
+const checkItinerary = currentItineraries.indexOf(req.body.itineary)
+
+if (currentItineraries.indexOf(req.body.itinerary >= 0)) {
+  
+
+}
+
+userModel.updateOne({email: userEmail}, {$push:{
+  itineraries: itineraryUpdated
+}})
+})
 
 module.exports = router

@@ -9,7 +9,7 @@ import loginImage from '../images/loginIcon.png'
 import { connect } from "react-redux";
 import PropTypes from 'prop-types'
 import { fetchCities } from '../store/actions/cityActions';
-import { userLogedin } from '../store/actions/userActions'
+import { userLogedin, logoutUser } from '../store/actions/userActions'
 
 class Cities extends Component {
     
@@ -96,15 +96,15 @@ constructor(props) {
         }else {
             const popoverContent = 
             <div>
-            <a href="/signin">Logout</a>
+            <p className="mb-0 text-primary" onClick={()=> this.logoutAction()}>Logout</p>
             </div>
             return popoverContent
         }
         }
     fillLogedDet = () => {
-        if (this.props.user.length === 0) {
+        if (this.props.user.length === 0 || this.props.user.image === "") {
             const logedDetails = 
-                <div>
+                <div className="d-flex align-items-center">
                 <img src={loginImage} alt="Login"></img>
                 </div>
             return logedDetails
@@ -122,15 +122,18 @@ constructor(props) {
             return
         } else {
             const email = 
-            <p className="mb-0 ml-2" style={{fontSize: "15px"}}>{this.props.user.username}</p>
+            <p className="mb-0 ml-2" style={{fontSize: "15px"}}>{this.props.user.email}</p>
             return email
         }
     }
 
+    logoutAction = () => {
+        this.props.logoutUser()
+    }
 
     render () {
 
-        console.log(this.props.location.search.slice(this.props.location.search.indexOf("=")+1))
+        console.log(this.props.location.search)
 
         const popover = (
             <Popover id="popover-basic">
@@ -181,7 +184,8 @@ constructor(props) {
 Cities.propTypes = {
     fetchCities: PropTypes.func.isRequired,
     cities: PropTypes.array.isRequired,
-    userLogedin: PropTypes.func.isRequired
+    userLogedin: PropTypes.func.isRequired,
+    logoutUser: PropTypes.func.isRequired
 }
 
 const mapStateToProps = state => ({
@@ -189,4 +193,4 @@ const mapStateToProps = state => ({
     user: state.user.items
 })
 
-export default connect(mapStateToProps, { fetchCities, userLogedin })(Cities);
+export default connect(mapStateToProps, { fetchCities, userLogedin, logoutUser })(Cities);

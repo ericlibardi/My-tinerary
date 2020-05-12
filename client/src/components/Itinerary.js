@@ -4,11 +4,13 @@ import OverlayTrigger from 'react-bootstrap/OverlayTrigger'
 import Popover from 'react-bootstrap/Popover'
 import loginImage from '../images/loginIcon.png'
 import rightArrow from '../images/right-arrow.png'
+import emptyStar from '../images/emptyStar.jpg'
+import fullStar from '../images/fullStar.jpg'
 
 import { connect } from "react-redux";
 import PropTypes from 'prop-types'
 import { fetchItineraries } from '../store/actions/itineraryActions';
-import { userLogedin } from '../store/actions/userActions'
+import { userLogedin, logoutUser } from '../store/actions/userActions'
 
 import { CarouselProvider, Slider, Slide, ButtonBack, ButtonNext } from 'pure-react-carousel'; //https://www.npmjs.com/package/pure-react-carousel
 import 'pure-react-carousel/dist/react-carousel.es.css';
@@ -17,20 +19,24 @@ class Itineraries extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            city: [],
-            user: "",
+            city: []
         }
     }
+
     componentDidMount() {
-        //const itineraries = this.props.match.params
         const city = this.props.location.state.city
         const cityId = city._id
         this.props.fetchItineraries(cityId)
         this.setState ({
             city: this.props.location.state.city
         })
-        this.props.userLogedin()
+        
         }
+    
+    componentDidCatch() {
+        this.props.userLogedin()
+    }
+
 
     fillItineraries = () => {
         const itinerariesList =
@@ -46,7 +52,7 @@ class Itineraries extends Component {
                  </div>
                 <div className="d-flex flex-column justify-content-center py-1" style={{width: "72%"}}>
                     <div >
-                        <h5 className="my-1 ml-2">{itinerary.title}</h5>
+                        {this.fillFavItinerary(itinerary)}
                         <div className="d-flex">
                             <p className="ml-2 mb-0">Likes: {itinerary.ratings}</p>
                             <p className="ml-3 mb-0">{itinerary.duration}</p>
@@ -141,15 +147,15 @@ fillPopOver = () => {
     }else {
         const popoverContent = 
         <div>
-        <a href="/signin">Logout</a>
+        <p className="mb-0 text-primary" onClick={()=> this.logoutAction()}>Logout</p>
         </div>
         return popoverContent
     }
     }
 fillLogedDet = () => {
-    if (this.props.user.length === 0) {
+    if (this.props.user.length === 0 || this.props.user.image === "") {
         const logedDetails = 
-            <div>
+            <div className="d-flex align-items-center">
             <img src={loginImage} alt="Login"></img>
             </div>
         return logedDetails
@@ -167,14 +173,42 @@ fillEmalDetail = () => {
         return
     } else {
         const email = 
-        <p className="mb-0 ml-2" style={{fontSize: "15px"}}>{this.props.user.username}</p>
+        <p className="mb-0 ml-2" style={{fontSize: "15px"}}>{this.props.user.email}</p>
         return email
     }
 }
-    
 
+logoutAction = () => {
+    this.props.logoutUser()
+}
+
+fillFavItinerary = (itinerary) => {
+    if(this.props.user.length < 1) {
+        const favIcon =
+        <h5 className="my-1 ml-2">{itinerary.title}</h5>
+        return favIcon
+    } else if (this.props.user.itineraries !== undefined) {
+        console.log(this.props.user.itineraries.indexOf("5e8e2e671c9d440000762547"))
+    
+        if(this.props.user.itineraries.indexOf(itinerary._id) >= 0) {
+            const favIcon = 
+            <div className="d-flex justify-content-between">
+            <h5 className="my-1 ml-2">{itinerary.title}</h5>
+            <img className="mr-1"src={fullStar} alt="star" style={{width: "16px", height: "16px"}}></img>
+            </div>
+            return favIcon
+    
+            } else {
+            const favIcon = 
+            <div className="d-flex justify-content-between">
+            <h5 className="my-1 ml-2">{itinerary.title}</h5>
+            <img className="mr-1"src={emptyStar} alt="star" style={{width: "16px", height: "16px"}}></img>
+            </div>
+            return favIcon
+        }
+    }       
+}
     render() {
-        console.log(this.props.itineraries.length)
       
         const popover = (
             <Popover id="popover-basic">
@@ -236,7 +270,8 @@ fillEmalDetail = () => {
 Itineraries.propTypes = {
     fetchItineraries: PropTypes.func.isRequired,
     itineraries: PropTypes.array.isRequired,
-    userLogedin: PropTypes.func.isRequired
+    userLogedin: PropTypes.func.isRequired,
+    logoutUser: PropTypes.func.isRequired
 }
 
 const mapStateToProps = state => ({
@@ -244,4 +279,4 @@ const mapStateToProps = state => ({
     user: state.user.items
 })
 
-export default connect(mapStateToProps, { fetchItineraries, userLogedin })(Itineraries);
+export default connect(mapStateToProps, { fetchItineraries, userLogedin, logoutUser })(Itineraries);

@@ -1,4 +1,4 @@
-import { STORE_TOKEN } from '../actions/actionTypes'
+/* import { STORE_TOKEN } from '../actions/actionTypes'
 
 const initialState = {
     items: [],
@@ -16,4 +16,4 @@ export default function(state = initialState, action) {
             return state;
         }
 
-}
+} */

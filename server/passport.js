@@ -62,6 +62,14 @@ module.exports = passport.use(
     User.findOne({email: email._json.email}).then((currentUser) => {
       if(currentUser){
         
+        User.updateOne({_id: currentUser._id}, { $set: {
+          logedin: true 
+        }}).then(res=> {
+          return res
+
+        })
+
+        console.log(currentUser._id)
         console.log("current user")  
         currentUser.save().then(res => {
           
@@ -73,6 +81,8 @@ module.exports = passport.use(
           oAuth: true,
           password: "",
           image: email._json.picture,
+          logedin: true,
+          itineraries: ""
           })
           newUser.save()
             .then(user => { 

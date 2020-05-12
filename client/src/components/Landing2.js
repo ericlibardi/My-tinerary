@@ -10,8 +10,7 @@ import directImage from '../images/world-icon.png'
 import { fetchCities } from '../store/actions/cityActions';
 import PropTypes from 'prop-types'
 import { connect } from "react-redux";
-import { storeUser } from '../store/actions/loginActions'
-import { userLogedin } from '../store/actions/userActions'
+import { userLogedin, logoutUser } from '../store/actions/userActions'
 
 class Landing2 extends Component {
         
@@ -19,8 +18,7 @@ class Landing2 extends Component {
         super(props);
         this.state = {
             isFetching: false,
-            cities: [1],
-            user: "",
+            cities: [1]
         };
         this.storeToken = this.storeToken.bind(this);
     }
@@ -31,12 +29,17 @@ class Landing2 extends Component {
         this.props.userLogedin()
      }
 
-     storeToken = () => {
+     storeToken = () => {  
+         if (window.performance.navigation.type === 1) {
+             return
+         } else {
         const token = this.props.location.search.slice(this.props.location.search.indexOf("=")+1)
-        if(token !== "")
-        this.props.storeUser(token)
-
-    }
+        const checkStorage = localStorage.getItem('token')
+        console.log(checkStorage)
+        if(token !== "") {
+            localStorage.setItem('token', token) 
+        }
+    }}
 
     fillPopOver = () => {
         if (this.props.user.length === 0) {
@@ -51,15 +54,15 @@ class Landing2 extends Component {
         }else {
             const popoverContent = 
             <div>
-            <a href="/signin">Logout</a>
+            <p className="mb-0 text-primary" onClick={()=> this.logoutAction()}>Logout</p>
             </div>
             return popoverContent
         }
         }
     fillLogedDet = () => {
-        if (this.props.user.length === 0) {
+        if (this.props.user.length === 0 || this.props.user.image === "") {
             const logedDetails = 
-                <div>
+                <div className="d-flex align-items-center">
                 <img src={loginImage} alt="Login"></img>
                 </div>
             return logedDetails
@@ -77,13 +80,17 @@ class Landing2 extends Component {
             return
         } else {
             const email = 
-            <p className="mb-0 ml-2" style={{fontSize: "15px"}}>{this.props.user.username}</p>
+            <p className="mb-0 ml-2" style={{fontSize: "15px"}}>{this.props.user.email}</p>
             return email
         }
     }
 
+    logoutAction = () => {
+        this.props.logoutUser(this.props.user.email)
+    }
+
     render() {
-        console.log(this.props.user)
+        console.log(this.props.user.email)
         const imageStyle ={
             width: "140px",
             height: "95px",
@@ -196,8 +203,8 @@ class Landing2 extends Component {
 Landing2.propTypes = {
     fetchCities: PropTypes.func.isRequired,
     cities: PropTypes.array.isRequired,
-    storeUser: PropTypes.func.isRequired,
-    userLogedin: PropTypes.func.isRequired
+    userLogedin: PropTypes.func.isRequired,
+    logoutUser: PropTypes.func.isRequired
 }
 
 const mapStateToProps = state => ({
@@ -205,4 +212,4 @@ const mapStateToProps = state => ({
     user: state.user.items
 })
 
-export default connect(mapStateToProps, { fetchCities, storeUser, userLogedin })(Landing2);
+export default connect(mapStateToProps, { fetchCities, logoutUser, userLogedin })(Landing2);

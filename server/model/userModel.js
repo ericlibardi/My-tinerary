@@ -21,6 +21,12 @@ const userSchema = new mongoose.Schema({
     },
     image: {
         type: String
+    },
+    logedin: {
+        type: Boolean
+    },
+    itineraries: {
+        type: Array
     }
 })
 
