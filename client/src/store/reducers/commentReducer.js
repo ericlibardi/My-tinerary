@@ -1,4 +1,4 @@
-/* import { STORE_TOKEN } from '../actions/actionTypes'
+/* import { MODIFY_COMMENT } from '../actions/actionTypes'
 
 const initialState = {
     items: [],

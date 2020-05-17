@@ -90,7 +90,7 @@ class Landing2 extends Component {
     }
 
     render() {
-        console.log(this.props.user.email)
+        console.log(this.props.user.image)
         const imageStyle ={
             width: "140px",
             height: "95px",

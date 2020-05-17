@@ -10,7 +10,8 @@ import fullStar from '../images/fullStar.jpg'
 import { connect } from "react-redux";
 import PropTypes from 'prop-types'
 import { fetchItineraries } from '../store/actions/itineraryActions';
-import { userLogedin, logoutUser } from '../store/actions/userActions'
+import { userLogedin, logoutUser, favItineraries } from '../store/actions/userActions'
+import { modifyComment } from '../store/actions/commentActions'
 
 import { CarouselProvider, Slider, Slide, ButtonBack, ButtonNext } from 'pure-react-carousel'; //https://www.npmjs.com/package/pure-react-carousel
 import 'pure-react-carousel/dist/react-carousel.es.css';
@@ -19,7 +20,8 @@ class Itineraries extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            city: []
+            city: [],
+            comment: ""
         }
     }
 
@@ -30,13 +32,33 @@ class Itineraries extends Component {
         this.setState ({
             city: this.props.location.state.city
         })
-        
+        this.handleChange = this.handleChange.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this)   
         }
     
     componentDidCatch() {
         this.props.userLogedin()
     }
 
+    handleChange(event) {
+        const value = event.target.value;
+        const name = event.target.name;
+
+        this.setState({ [name]: value })
+    }
+
+    handleSubmit(itinerary) {
+        const comment = this.state.comment;
+        const user = this.props.user._id
+        const action = "create"
+        const city = this.state.city._id
+        if(this.props.user.length < 1) {
+            alert("Please, login first for commenting")
+        } else {
+            this.props.modifyComment(
+                comment, itinerary, user, city, action
+            )}
+    }
 
     fillItineraries = () => {
         const itinerariesList =
@@ -45,8 +67,7 @@ class Itineraries extends Component {
         borderRadius: "5px", maxWidth: "90vh"}}>
             <div className="d-flex">
                 <div className="d-flex flex-column justify-content-center align-items-center"
-                style={{width: "28%"}}
-                >
+                style={{width: "28%"}} >
                     <img src={loginImage} alt="Login"></img>
                     <p className="mt-1 mb-0" style={{fontSize: "13px"}}>{itinerary.profileName}</p>
                  </div>
@@ -76,13 +97,10 @@ class Itineraries extends Component {
                         naturalSlideHeight={20}
                         totalSlides={itinerary.activities.length / 3}
                         step={1}
-                        
-                    >
-                        
+                    >  
                         <Slider>
                         {itinerary.activities.map((activity, index)=> {
                         const activities =
-                        
                         <Slide index={index} key={index} className="card mr-1" style={{width: "16vh", height: "16vh"}}>
                             <img className="card-img" src={activity.image} alt={activity.title} style={{width: "100%", height: "100%", objectFit: "cover"}}></img>
                             <div className="card-img-overlay d-flex justify-content-center align-items-center">
@@ -98,22 +116,22 @@ class Itineraries extends Component {
                         <ButtonNext><img src={rightArrow} alt="righ_arrow" style={{width: "25px"}}></img></ButtonNext>
                         </div>
 
-
                     </CarouselProvider>
-
                     </div>
                     <h6 className="ml-2 mt-4 mb-1">Comments</h6>
-                    <input style={{width: "85%", display: "inline-block"}} type="text" 
-                    className="form-control ml-2 mb-3" placeholder="Write comment" 
-                    ></input>
-                    <img src={rightArrow} alt="rightArrow" style={{width: "8%"}}></img>
+                   
+                        <input name="comment" style={{width: "85%", display: "inline-block"}} type="text" 
+                        className="form-control ml-2 mb-3" placeholder="Write comment" 
+                        value={this.state.comment} onChange={this.handleChange}/>
+                        <img src={rightArrow} alt="rightArrow" style={{width: "8%"}}
+                        onClick={()=> this.handleSubmit(itinerary._id)}
+                        ></img>
                 </div>
                 <div className="bg-warning text-center" onClick={() => this.myFunction(itinerary)} style={{fontSize: "13px"}}>
                     <p className="my-1" id={"viewMore" + itinerary._id} style={{display: "inline-block"}}>View More</p>
                     <p className="my-1" id={"close" + itinerary._id} style={{display: "none"}}>Close</p>
                 </div>
             </div>
-
         </div>
         )
         return itinerariesList
@@ -179,7 +197,7 @@ fillEmalDetail = () => {
 }
 
 logoutAction = () => {
-    this.props.logoutUser()
+    this.props.logoutUser(this.props.user.email)
 }
 
 fillFavItinerary = (itinerary) => {
@@ -188,13 +206,12 @@ fillFavItinerary = (itinerary) => {
         <h5 className="my-1 ml-2">{itinerary.title}</h5>
         return favIcon
     } else if (this.props.user.itineraries !== undefined) {
-        console.log(this.props.user.itineraries.indexOf("5e8e2e671c9d440000762547"))
     
         if(this.props.user.itineraries.indexOf(itinerary._id) >= 0) {
             const favIcon = 
             <div className="d-flex justify-content-between">
             <h5 className="my-1 ml-2">{itinerary.title}</h5>
-            <img className="mr-1"src={fullStar} alt="star" style={{width: "16px", height: "16px"}}></img>
+            <img className="mr-1" onClick={()=>this.updateFavorites(itinerary._id)} src={fullStar} alt="star" style={{width: "16px", height: "16px"}}></img>
             </div>
             return favIcon
     
@@ -202,14 +219,21 @@ fillFavItinerary = (itinerary) => {
             const favIcon = 
             <div className="d-flex justify-content-between">
             <h5 className="my-1 ml-2">{itinerary.title}</h5>
-            <img className="mr-1"src={emptyStar} alt="star" style={{width: "16px", height: "16px"}}></img>
+            <img className="mr-1" onClick={()=>this.updateFavorites(itinerary._id)} src={emptyStar} alt="star" style={{width: "16px", height: "16px"}}></img>
             </div>
             return favIcon
         }
     }       
 }
+
+updateFavorites = (itinerary) => {
+    this.props.favItineraries(
+        itinerary
+    )
+}
+
     render() {
-      
+
         const popover = (
             <Popover id="popover-basic">
               <Popover.Content>
@@ -217,7 +241,6 @@ fillFavItinerary = (itinerary) => {
               </Popover.Content>
             </Popover>
           );
-
 
         return (
             <div>
@@ -233,11 +256,6 @@ fillFavItinerary = (itinerary) => {
                         <Nav className="ml-auto">
                             <Nav.Link href="/" className="ml-auto font-weight-bold text-white">Home</Nav.Link>
                             <Nav.Link href="/cities" className="ml-auto font-weight-bold text-white">Cities</Nav.Link>
-                            {/* <NavDropdown title="Dropdown" id="basic-nav-dropdown">
-                                <NavDropdown.Item href="#action/3.1">Action</NavDropdown.Item>
-                                <NavDropdown.Item href="#action/3.2">Another action</NavDropdown.Item>
-                                <NavDropdown.Item href="#action/3.3">Something</NavDropdown.Item>
-                            </NavDropdown> */}
                         </Nav>
                     </Navbar.Collapse>
                 </Navbar>
@@ -271,7 +289,9 @@ Itineraries.propTypes = {
     fetchItineraries: PropTypes.func.isRequired,
     itineraries: PropTypes.array.isRequired,
     userLogedin: PropTypes.func.isRequired,
-    logoutUser: PropTypes.func.isRequired
+    logoutUser: PropTypes.func.isRequired,
+    favItineraries: PropTypes.func.isRequired,
+    modifyComment: PropTypes.func.isRequired
 }
 
 const mapStateToProps = state => ({
@@ -279,4 +299,5 @@ const mapStateToProps = state => ({
     user: state.user.items
 })
 
-export default connect(mapStateToProps, { fetchItineraries, userLogedin, logoutUser })(Itineraries);
+export default connect(mapStateToProps, { fetchItineraries, userLogedin, 
+    logoutUser, favItineraries, modifyComment })(Itineraries);

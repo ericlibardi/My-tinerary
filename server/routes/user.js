@@ -187,19 +187,31 @@ router.post('/logout', async(req,res) => {
 })
 })
 
-router.post('/itineraries', async(req,res) => {
-let user = await userModel.findOne({ email: req.body.email })
-const currentItineraries = user.itineraries
-const checkItinerary = currentItineraries.indexOf(req.body.itineary)
-
-if (currentItineraries.indexOf(req.body.itinerary >= 0)) {
+router.post('/itineraries', 
+passport.authenticate("jwt", { session: false }),
+async(req,res) => {
   
+let user = await userModel.findOne({ email: req.user.email })
 
+const checkItinerary = user.itineraries.indexOf(req.body.itinerary)
+console.log(checkItinerary)
+
+if (checkItinerary >= 0) {
+  const beforeItinerary = user.itineraries.slice(0 , checkItinerary)
+  const afterItinerary = user.itineraries.slice(checkItinerary + 1, user.itineraries.length)
+  const newItineraries = beforeItinerary.concat(afterItinerary)
+  userModel.updateOne({email: user.email}, {$set:{
+    itineraries: newItineraries
+  }}).then(response=> {
+    res.send(response)
+  })
+} else {
+  userModel.updateOne({email: user.email}, {$push:{
+    itineraries: req.body.itinerary
+  }}).then(response=> {
+    res.send(response)
+  })
 }
-
-userModel.updateOne({email: userEmail}, {$push:{
-  itineraries: itineraryUpdated
-}})
 })
 
 module.exports = router

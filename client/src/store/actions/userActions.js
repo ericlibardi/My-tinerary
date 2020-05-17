@@ -80,19 +80,28 @@ export const userLogedin = () => async dispatch => {
 
 export const logoutUser = (userEmail) => async dispatch => {
   const config = {headers: {
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
   }}
   const body = JSON.stringify({userEmail})
-  console.log(body)
   try{ 
   dispatch({type: LOGOUT_USER})
-  await axios.post('http://localhost:5000/users/logout', body, config)
+  await axios.post('http://localhost:5000/users/logout', body, config).then(
+    console.log("user loged out")
+  )
   }
   catch (err){
     console.log(err)
   }
 }
 
-export const updateUserItineraries = () => async dispatch => {
+export const favItineraries = (itinerary) => async dispatch => {
+  const config = {headers: {
+    'Content-Type': 'application/json',
+    'Authorization':  `bearer ${localStorage.token}`
+  }}
+  const body = JSON.stringify({itinerary})
+  const response = await axios.post('http://localhost:5000/users/itineraries', body, config)
+  console.log(response.data)
+  dispatch (getUser())
 
 }

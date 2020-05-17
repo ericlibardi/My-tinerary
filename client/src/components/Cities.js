@@ -128,7 +128,7 @@ constructor(props) {
     }
 
     logoutAction = () => {
-        this.props.logoutUser()
+        this.props.logoutUser(this.props.user.email)
     }
 
     render () {
