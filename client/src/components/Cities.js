@@ -122,7 +122,7 @@ constructor(props) {
             return
         } else {
             const email = 
-            <p className="mb-0 ml-2" style={{fontSize: "15px"}}>{this.props.user.email}</p>
+            <p className="mb-0 ml-2" style={{fontSize: "15px"}}>{this.props.user.username}</p>
             return email
         }
     }

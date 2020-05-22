@@ -6,12 +6,15 @@ import loginImage from '../images/loginIcon.png'
 import rightArrow from '../images/right-arrow.png'
 import emptyStar from '../images/emptyStar.jpg'
 import fullStar from '../images/fullStar.jpg'
+import trash from '../images/trash.png'
+import pencil from '../images/pencil.png'
+import reply from '../images/reply.png'
 
 import { connect } from "react-redux";
 import PropTypes from 'prop-types'
 import { fetchItineraries } from '../store/actions/itineraryActions';
 import { userLogedin, logoutUser, favItineraries } from '../store/actions/userActions'
-import { modifyComment } from '../store/actions/commentActions'
+import { modifyComment, fetchComments } from '../store/actions/commentActions'
 
 import { CarouselProvider, Slider, Slide, ButtonBack, ButtonNext } from 'pure-react-carousel'; //https://www.npmjs.com/package/pure-react-carousel
 import 'pure-react-carousel/dist/react-carousel.es.css';
@@ -21,7 +24,8 @@ class Itineraries extends Component {
         super(props);
         this.state = {
             city: [],
-            comment: ""
+            comment: "",
+            editComment: ""
         }
     }
 
@@ -32,8 +36,11 @@ class Itineraries extends Component {
         this.setState ({
             city: this.props.location.state.city
         })
+        this.props.fetchComments()
         this.handleChange = this.handleChange.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this)   
+        this.handleComment = this.handleComment.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleDeleteComment = this.handleDeleteComment.bind(this) 
         }
     
     componentDidCatch() {
@@ -43,21 +50,42 @@ class Itineraries extends Component {
     handleChange(event) {
         const value = event.target.value;
         const name = event.target.name;
-
         this.setState({ [name]: value })
+    }
+    handleComment(event) {
+        const value = event.target.value;
+        const name = event.target.name;
+        this.setState({ [name]: value})
     }
 
     handleSubmit(itinerary) {
         const comment = this.state.comment;
-        const user = this.props.user._id
         const action = "create"
-        const city = this.state.city._id
         if(this.props.user.length < 1) {
             alert("Please, login first for commenting")
         } else {
             this.props.modifyComment(
-                comment, itinerary, user, city, action
-            )}
+                comment, itinerary, action
+            )
+            this.setState({comment: ""})
+        }        
+    }
+
+    handleModifyComment(comment) {
+        const action = "edit"
+        const itinerary = this.state.editComment
+        this.props.modifyComment(
+            comment, itinerary, action
+        )
+        this.setState({editComment: ""})
+        this.openEditButton(comment._id)
+    }
+
+    handleDeleteComment(comment, itinerary) {
+        const action = "delete"
+        this.props.modifyComment(
+            comment, itinerary, action
+        )
     }
 
     fillItineraries = () => {
@@ -121,11 +149,43 @@ class Itineraries extends Component {
                     <h6 className="ml-2 mt-4 mb-1">Comments</h6>
                    
                         <input name="comment" style={{width: "85%", display: "inline-block"}} type="text" 
-                        className="form-control ml-2 mb-3" placeholder="Write comment" 
+                        className="form-control ml-2 mb-2" placeholder="Write comment" 
                         value={this.state.comment} onChange={this.handleChange}/>
                         <img src={rightArrow} alt="rightArrow" style={{width: "8%"}}
                         onClick={()=> this.handleSubmit(itinerary._id)}
                         ></img>
+                        {this.props.comments.map(comments=>{
+                            if (comments.itineraryId === itinerary._id) {
+                            const test =
+                                <div  key={comments._id} className=" my-2">
+                                    <div className="mx-4 border rounded border-secondary">
+                                        <div className="d-flex align-items-center border-bottom">
+                                            <img style={{width: "18px", borderRadius: "50%"}} className="mx-1 my-1"src={comments.userImage}></img>
+                                            <p className="my-0" style={{fontSize: "12px"}}>{comments.username}</p>
+                                        </div>
+                                        <p id={"editCommentClosed" + comments._id} className="my-1 px-2" style={{display: "flex"}}>{comments.comment}</p>
+                                        <div id={"editCommentOpen" + comments._id} className="align-items-center" style={{display: "none"}}>
+                                            <input name="editComment" style={{width: "85%"}} type="text" 
+                                                className="form-control ml-2 mb-2" placeholder="Edit comment" 
+                                                value={this.state.editComment} onChange={this.handleComment}/>
+                                            <img src={rightArrow} alt="rightArrow" style={{width: "8%"}}
+                                                onClick={()=> this.handleModifyComment(comments)}></img>
+                                        </div>
+                                    </div>
+                                    <div className="mx-4 d-flex align-items-center justify-content-around">
+                                        <img src={reply} className="mt-1" alt="reply"></img>
+                                        <img src={pencil} className="mt-1" alt="pen" onClick={()=>this.openEditButton(comments._id)}></img>
+                                        <img src={trash} className="mt-1" alt="trash" onClick={()=>this.handleDeleteComment(comments, itinerary._id)}></img>
+                                    </div>
+                                </div>
+                            return test} 
+                        
+                            else {
+                                return null
+                            }
+                            
+                        })}
+                        
                 </div>
                 <div className="bg-warning text-center" onClick={() => this.myFunction(itinerary)} style={{fontSize: "13px"}}>
                     <p className="my-1" id={"viewMore" + itinerary._id} style={{display: "inline-block"}}>View More</p>
@@ -136,8 +196,7 @@ class Itineraries extends Component {
         )
         return itinerariesList
         }
-    myFunction = (itinerary) => {
-        
+    myFunction = (itinerary) => { 
         var viewMore = document.getElementById("viewMore" + itinerary._id);
         var close = document.getElementById("close" + itinerary._id)
         var moreText = document.getElementById("more" + itinerary._id);
@@ -150,6 +209,15 @@ class Itineraries extends Component {
             viewMore.style.display = "none"
             moreText.style.display = "inline-block";
           }
+}
+
+openEditButton = (comment) => {
+    var editComment = document.getElementById("editCommentOpen" + comment)
+      if (editComment.style.display === "none") {
+        editComment.style.display = "flex";
+    } else {
+      editComment.style.display = "none";
+    }   
 }
 
 fillPopOver = () => {
@@ -191,7 +259,7 @@ fillEmalDetail = () => {
         return
     } else {
         const email = 
-        <p className="mb-0 ml-2" style={{fontSize: "15px"}}>{this.props.user.email}</p>
+        <p className="mb-0 ml-2" style={{fontSize: "15px"}}>{this.props.user.username}</p>
         return email
     }
 }
@@ -233,7 +301,6 @@ updateFavorites = (itinerary) => {
 }
 
     render() {
-
         const popover = (
             <Popover id="popover-basic">
               <Popover.Content>
@@ -291,13 +358,15 @@ Itineraries.propTypes = {
     userLogedin: PropTypes.func.isRequired,
     logoutUser: PropTypes.func.isRequired,
     favItineraries: PropTypes.func.isRequired,
+    fetchComments: PropTypes.func.isRequired,
     modifyComment: PropTypes.func.isRequired
 }
 
 const mapStateToProps = state => ({
     itineraries: state.itineraries.items,
-    user: state.user.items
+    user: state.user.items,
+    comments: state.comments.items
 })
 
 export default connect(mapStateToProps, { fetchItineraries, userLogedin, 
-    logoutUser, favItineraries, modifyComment })(Itineraries);
+    logoutUser, favItineraries, fetchComments, modifyComment })(Itineraries);

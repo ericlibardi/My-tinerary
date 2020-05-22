@@ -9,9 +9,12 @@ const commentSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    cityId: {
+    username: {
         type: String,
         required: true,
+    },
+    userImage: {
+        type: String,
     },
     itineraryId: {
         type: String,

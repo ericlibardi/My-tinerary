@@ -25,7 +25,7 @@ app.use(cors());
 app.use('/cities', require('./routes/cities'))
 app.use('/itineraries', require('./routes/itinerary'))
 app.use('/users', require('./routes/user'))
-//app.use('/testes', require('./routes/comments'))
+app.use('/comments', require('./routes/comments'))
 
 const passport = require('./passport');
 

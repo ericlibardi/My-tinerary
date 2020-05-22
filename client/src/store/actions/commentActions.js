@@ -1,14 +1,53 @@
-import { MODIFY_COMMENT } from './actionTypes';
+import { MODIFY_COMMENT, FETCH_COMMENTS } from './actionTypes';
 import axios from 'axios';
 
-export const modifyComment = (comment, itinerary, user, city, action) => async dispatch => {
-  const config = {headers: {
-    'Content-Type': 'application/json',
-  }}
+export const modifyComment = (comment, itinerary, action) => async dispatch => {
   
-  const body = JSON.stringify({comment, itinerary, user, city})
-  
-  //const response = await axios.post('http://localhost:5000/users/itineraries', body, config)
-  
+  if (action === "create") {
+    const config = {headers: {
+      'Content-Type': 'application/json',
+      'Authorization':  `bearer ${localStorage.token}`
+    }}
+    
+    const body = JSON.stringify({comment, itinerary})
+    const response = await axios.post('http://localhost:5000/comments/create', body, config)
+    dispatch({
+      type: MODIFY_COMMENT,
+      payload: response.data
+    })
+  } else if (action === "delete") {
+    const config = {headers: {
+      'Content-Type': 'application/json',
+      'Authorization':  `bearer ${localStorage.token}`
+    }}
+    console.log("test")
+    const body = JSON.stringify({comment})
+    const response = await axios.post('http://localhost:5000/comments/delete', body, config)
+    dispatch({
+      type: MODIFY_COMMENT,
+      payload: response.data
+    })
 
+  } else if (action === "edit") {
+    const config = {headers: {
+      'Content-Type': 'application/json',
+      'Authorization':  `bearer ${localStorage.token}`
+    }}
+    const body = JSON.stringify({comment, itinerary})
+    const response = await axios.post('http://localhost:5000/comments/edit', body, config)
+    dispatch({
+      type: MODIFY_COMMENT,
+      payload: response.data
+    })
+  }
+  
+}
+
+export const fetchComments = () => async dispatch => {
+  const response = await axios.get('http://localhost:5000/comments/get' )
+  
+  dispatch({
+    type: FETCH_COMMENTS,
+    payload: response.data
+  })
 }

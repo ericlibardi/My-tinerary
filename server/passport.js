@@ -12,33 +12,6 @@ const opts = {};
 opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
 opts.secretOrKey= key.secretOrKey;
 
-/* passport.serializeUser((user, done) =>{
-
-  const payload = {
-    id: user.id,
-    username: user.email,
-    image: user.image
-  };
-  const options = { expiresIn: 2592000 };
-            jwt.sign(payload,
-              key.secretOrKey,
-             options, (err, token) => {
-                if (err) {
-                    res.json({
-                        success: false,
-                        token: "There was an error"
-                    });
-                }
-                else {
-                    console.log(token);
-                    res.json({
-                        success: true,
-                        token: token
-                    })
-                }
-            });
-})
- */
 
 module.exports = passport.use(
     new JwtStrategy(opts, (jwt_payload, done) => {
@@ -69,7 +42,6 @@ module.exports = passport.use(
 
         })
 
-        console.log(currentUser._id)
         console.log("current user")  
         currentUser.save().then(res => {
           
@@ -77,6 +49,7 @@ module.exports = passport.use(
         })
       }else {
         const newUser = new User({
+          username: email._json.name,
           email: email._json.email,
           oAuth: true,
           password: "",

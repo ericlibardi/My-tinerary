@@ -21,6 +21,4 @@ router.get('/:cityId',
             .catch(err => console.log(err));
     });
 
-router.post('/comments')
-
 module.exports = router

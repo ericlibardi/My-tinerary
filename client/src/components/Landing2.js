@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import { Navbar, Nav/*, NavDropdown */} from 'react-bootstrap'
+import { Navbar, Nav } from 'react-bootstrap'
 import Container from 'react-bootstrap/Container'
 import Carousel from 'react-bootstrap/Carousel'
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger'
@@ -80,7 +80,7 @@ class Landing2 extends Component {
             return
         } else {
             const email = 
-            <p className="mb-0 ml-2" style={{fontSize: "15px"}}>{this.props.user.email}</p>
+            <p className="mb-0 ml-2" style={{fontSize: "15px"}}>{this.props.user.username}</p>
             return email
         }
     }

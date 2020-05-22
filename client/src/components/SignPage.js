@@ -11,6 +11,7 @@ class SignPage extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            username: "",
             email: "",
             password: "",
             urlPicture: ""
@@ -34,15 +35,15 @@ class SignPage extends Component {
     }
 
     handleSubmit(event) {
+        const username = this.state.username;
         const email = this.state.email;
         const password = this.state.password;
         const image = this.state.urlPicture;
 
         event.preventDefault();
         
-    
         this.props.createUser(
-            email, password, image
+            username, email, password, image
         )
         this.props.history.push("/")
 
@@ -60,6 +61,7 @@ class SignPage extends Component {
         console.log(this.state.email)
         console.log(this.state.password)
         console.log(this.state.urlPicture)
+        console.log(this.state.username)
 
           const popover = (
             <Popover id="popover-basic"> 
@@ -96,6 +98,12 @@ class SignPage extends Component {
                 <h6 className="mb-3 font-weight-bold">Register on MYtinerary</h6>
                 <form className="d-flex flex-column mx-auto " onSubmit={this.handleSubmit}
                 style={{width: "65%"}}>
+                    <label className="my-2">
+                        <p className="my-1">username:</p>
+                        <input name="username" type="username" style={{width: "100%"}}
+                        className="form-control border border-dark"
+                        value={this.state.username} onChange={this.handleChange}/>
+                    </label>
                     <label className="my-2">
                         <p className="my-1">e-mail:</p>
                         <input name="email" type="email" style={{width: "100%"}}

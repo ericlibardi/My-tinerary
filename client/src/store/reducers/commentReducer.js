@@ -1,4 +1,4 @@
-/* import { MODIFY_COMMENT } from '../actions/actionTypes'
+import { MODIFY_COMMENT, FETCH_COMMENTS } from '../actions/actionTypes'
 
 const initialState = {
     items: [],
@@ -7,13 +7,18 @@ const initialState = {
 
 export default function(state = initialState, action) {
     switch(action.type) {
-        case STORE_TOKEN:
+        case MODIFY_COMMENT:
             return {
                 ...state,
                 items: action.payload
             }
+        case FETCH_COMMENTS:
+        return {
+            ...state,
+            items: action.payload
+        }
         default:
             return state;
         }
 
-} */
+}

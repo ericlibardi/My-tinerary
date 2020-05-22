@@ -21,7 +21,8 @@ router.get('/all',
 
 router.post('/register', [
     check('email').isEmail(),
-    check('password').isLength({ min: 6})
+    check('password').isLength({ min: 6}),
+    check('username').isLength({max: 28})
     ], (req, res) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
@@ -30,6 +31,7 @@ router.post('/register', [
 
     bcrypt.hash(req.body.password, 10).then((hash) => {
     const newUser = new userModel({
+        username: req.body.username,
         email: req.body.email,
         password: hash,
         image: req.body.image,
@@ -41,8 +43,9 @@ router.post('/register', [
       //res.send(user)
 
       const payload = {
+        username: user.username,
         id: user.id,
-        username: user.email,
+        email: user.email,
         image: user.image
       }
       const options = { expiresIn: 2592000 };
@@ -90,8 +93,9 @@ router.post('/login', cors(), async(req,res) =>{
   
           })
            const payload = {
+            username: user.username,
             id: user.id,
-            username: user.email,
+            email: user.email,
             image: user.image
         };
         const options = { expiresIn: 2592000 };
@@ -144,6 +148,7 @@ router.get("/googleresponse",
         console.log(req.user)
 
            const payload = {
+            username: req.user.username,
             id: req.user.id,
             email: req.user.email,
             image: req.user.image

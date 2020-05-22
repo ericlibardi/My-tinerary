@@ -24,11 +24,11 @@ export const loginUser = (email, password) => async dispatch => {
 }
 
 
-export const createUser = (email, password, image) => async dispatch => {
+export const createUser = (username, email, password, image) => async dispatch => {
   const config = {headers: {
     'Content-Type': 'application/json'
   }}
-  const body = JSON.stringify({email, password, image})
+  const body = JSON.stringify({username, email, password, image})
   console.log(body)
 
   try{
@@ -45,7 +45,7 @@ export const createUser = (email, password, image) => async dispatch => {
 }
 
 export const getUser = () => async dispatch => {
-
+  
   if (localStorage.token) {
     setToken(localStorage.token)
 }
