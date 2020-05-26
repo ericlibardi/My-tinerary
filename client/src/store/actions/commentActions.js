@@ -2,13 +2,11 @@ import { MODIFY_COMMENT, FETCH_COMMENTS } from './actionTypes';
 import axios from 'axios';
 
 export const modifyComment = (comment, itinerary, action) => async dispatch => {
-  
+  const config = {headers: {
+    'Content-Type': 'application/json',
+    'Authorization':  `bearer ${localStorage.token}`
+  }}
   if (action === "create") {
-    const config = {headers: {
-      'Content-Type': 'application/json',
-      'Authorization':  `bearer ${localStorage.token}`
-    }}
-    
     const body = JSON.stringify({comment, itinerary})
     const response = await axios.post('http://localhost:5000/comments/create', body, config)
     dispatch({
@@ -16,10 +14,6 @@ export const modifyComment = (comment, itinerary, action) => async dispatch => {
       payload: response.data
     })
   } else if (action === "delete") {
-    const config = {headers: {
-      'Content-Type': 'application/json',
-      'Authorization':  `bearer ${localStorage.token}`
-    }}
     console.log("test")
     const body = JSON.stringify({comment})
     const response = await axios.post('http://localhost:5000/comments/delete', body, config)
@@ -29,10 +23,6 @@ export const modifyComment = (comment, itinerary, action) => async dispatch => {
     })
 
   } else if (action === "edit") {
-    const config = {headers: {
-      'Content-Type': 'application/json',
-      'Authorization':  `bearer ${localStorage.token}`
-    }}
     const body = JSON.stringify({comment, itinerary})
     const response = await axios.post('http://localhost:5000/comments/edit', body, config)
     dispatch({
@@ -41,6 +31,17 @@ export const modifyComment = (comment, itinerary, action) => async dispatch => {
     })
   }
   
+}
+
+export const modifyReply = (reply, comment, action) => async dispatch => {
+  const config = {headers: {
+    'Content-Type': 'application/json',
+    'Authorization':  `bearer ${localStorage.token}`
+  }}
+  if (action == "add") {
+  const body = JSON.stringify({reply, comment})
+  const response = await axios.post('http://localhost:5000/comments/replyCreate', body, config)
+  }
 }
 
 export const fetchComments = () => async dispatch => {

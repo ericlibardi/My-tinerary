@@ -15,7 +15,6 @@ router.get('/get', (req, res) => {
     }
 })
 
-
 router.post('/create', 
 passport.authenticate("jwt", { session: false }),
 async(req, res) => {
@@ -72,8 +71,6 @@ router.post('/edit',
 passport.authenticate("jwt", { session: false }),
 async(req, res) => {
     try{
-
-
     commentModel.updateOne({_id: req.body.comment._id}, {$set:{
         comment: req.body.itinerary
       }}).then(response=> {
@@ -81,17 +78,7 @@ async(req, res) => {
             res.send(response)
         })
       })
-
- /*    if(req.user._id == req.body.comment.userId) {
-        await commentModel.deleteOne({_id: req.body.comment._id})
-    .then(()=>{
-        commentModel.find({cityId: req.body.comment.cityId}).then(response=> {
-            res.send(response)
-        })
-    })
-} else{
-    res.json("no user found")
-} */}
+    }
     catch(err){
         console.error(err.message);
         res.status(500).send('Server error')

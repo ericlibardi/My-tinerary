@@ -59,31 +59,6 @@ class Landing2 extends Component {
             return popoverContent
         }
         }
-    fillLogedDet = () => {
-        if (this.props.user.length === 0 || this.props.user.image === "") {
-            const logedDetails = 
-                <div className="d-flex align-items-center">
-                <img src={loginImage} alt="Login"></img>
-                </div>
-            return logedDetails
-        } else {
-            const logedDetails = 
-                <div className="d-flex align-items-center">
-                <img style={{width: "26px", borderRadius: "50%"}} src={this.props.user.image} alt="Logout"></img>
-                </div>
-            return logedDetails
-        }
-    }
-
-    fillEmalDetail = () => {
-        if (this.props.user.length === 0) {
-            return
-        } else {
-            const email = 
-            <p className="mb-0 ml-2" style={{fontSize: "15px"}}>{this.props.user.username}</p>
-            return email
-        }
-    }
 
     logoutAction = () => {
         this.props.logoutUser(this.props.user.email)
@@ -110,9 +85,11 @@ class Landing2 extends Component {
             <Navbar bg="secondary" expand="lg">
             <Navbar.Brand className="d-flex">
                 <OverlayTrigger trigger="click" placement="bottom" overlay={popover}>
-                    {this.fillLogedDet()}
+                    <div className="d-flex align-items-center">
+                        <img style={{width: "26px", borderRadius: "50%"}} src={this.props.user.length === 0 || this.props.user.image === "" ? loginImage : this.props.user.image} alt=""></img>
+                    </div>
                 </OverlayTrigger>
-                 {this.fillEmalDetail()}
+                    <p className="mb-0 ml-2" style={{fontSize: "15px"}}>{this.props.user.length === 0 ? "" : this.props.user.username}</p>
                 </Navbar.Brand>
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse id="basic-navbar-nav">
