@@ -14,7 +14,6 @@ export const modifyComment = (comment, itinerary, action) => async dispatch => {
       payload: response.data
     })
   } else if (action === "delete") {
-    console.log("test")
     const body = JSON.stringify({comment})
     const response = await axios.post('http://localhost:5000/comments/delete', body, config)
     dispatch({
@@ -31,17 +30,6 @@ export const modifyComment = (comment, itinerary, action) => async dispatch => {
     })
   }
   
-}
-
-export const modifyReply = (reply, comment, action) => async dispatch => {
-  const config = {headers: {
-    'Content-Type': 'application/json',
-    'Authorization':  `bearer ${localStorage.token}`
-  }}
-  if (action == "add") {
-  const body = JSON.stringify({reply, comment})
-  const response = await axios.post('http://localhost:5000/comments/replyCreate', body, config)
-  }
 }
 
 export const fetchComments = () => async dispatch => {

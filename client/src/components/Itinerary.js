@@ -14,7 +14,8 @@ import { connect } from "react-redux";
 import PropTypes from 'prop-types'
 import { fetchItineraries } from '../store/actions/itineraryActions';
 import { userLogedin, logoutUser, favItineraries } from '../store/actions/userActions'
-import { modifyComment, fetchComments, modifyReply } from '../store/actions/commentActions'
+import { modifyComment, fetchComments } from '../store/actions/commentActions'
+import { modifyReply, fetchReplies } from '../store/actions/replyActions'
 
 import { CarouselProvider, Slider, Slide, ButtonBack, ButtonNext } from 'pure-react-carousel'; //https://www.npmjs.com/package/pure-react-carousel
 import 'pure-react-carousel/dist/react-carousel.es.css';
@@ -38,6 +39,7 @@ class Itineraries extends Component {
             city: this.props.location.state.city
         })
         this.props.fetchComments()
+        this.props.fetchReplies()
         this.handleComment = this.handleComment.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleDeleteComment = this.handleDeleteComment.bind(this) 
@@ -92,7 +94,13 @@ class Itineraries extends Component {
         this.props.modifyReply(reply, comment, action)
         }
         this.setState({reply: ""})
-        this.openReply(comment)
+        this.openReply(comment._id)
+    }
+
+    deleteReply(reply, comment) {
+        const action = "delete"
+        this.props.modifyReply(reply, comment, action)
+
     }
 
     fillItineraries = () => {
@@ -165,7 +173,7 @@ class Itineraries extends Component {
                             if (comments.itineraryId === itinerary._id) {
                                 if (this.props.user._id === comments.userId) {
                             const test =
-                                <div  key={comments._id} className=" my-2">
+                                <div  key={comments._id} className="mt-3 mb-2">
                                     <div className="mx-4 border rounded border-secondary">
                                         <div className="d-flex align-items-center border-bottom">
                                             <img style={{width: "18px", borderRadius: "50%"}} className="mx-1 my-1"src={comments.userImage === "" ? loginImage : comments.userImage } alt=""></img>
@@ -189,12 +197,50 @@ class Itineraries extends Component {
                                             <input name="reply" style={{width: "92%"}} type="text" 
                                                 className="form-control ml-2 my-1" placeholder="Write reply" 
                                                 value={this.state.reply} onChange={this.handleComment}/>
-                                            <img src={rightArrow} alt="rightArrow" style={{width: "8%"}}/>
+                                            <img src={rightArrow} alt="rightArrow" style={{width: "8%"}} onClick={()=>this.handleCreateReply(comments)}/>
                                     </div>
+                                    {/* reply section*/} 
+                                   {this.props.replies.map(reply=>{
+                                       if (reply.commentId === comments._id) {
+                                           
+                                        if (this.props.user._id === reply.userId) {
+                                            const fillReply =
+                                        <div  key={reply._id} className=" my-2">
+                                            <div className="ml-5 mr-4 border rounded border-secondary">
+                                                <div className="d-flex align-items-center border-bottom">
+                                                    <img style={{width: "18px", borderRadius: "50%"}} className="mx-1 my-1"src={reply.userImage === "" ? loginImage : reply.userImage } alt=""></img>
+                                                    <p className="my-0" style={{fontSize: "12px"}}>{reply.username}</p>
+                                                </div>
+                                                <p className="my-1 px-2">{reply.reply}</p>
+                                            </div>
+                                            <div className="ml-5 mr-4 d-flex align-items-center justify-content-around">
+                                                <img src={trash} className="mt-1" alt="trash" onClick={()=>this.deleteReply(reply, comments)}></img>
+                                                <div/><div/>
+                                            </div>
+                                        </div>
+                                        return fillReply
+                                        } else {
+                                        const fillReply =
+                                        <div  key={reply._id} className=" my-2">
+                                            <div className="ml-5 mr-4 border rounded border-secondary">
+                                                <div className="d-flex align-items-center border-bottom">
+                                                    <img style={{width: "18px", borderRadius: "50%"}} className="mx-1 my-1"src={reply.userImage === "" ? loginImage : reply.userImage } alt=""></img>
+                                                    <p className="my-0" style={{fontSize: "12px"}}>{reply.username}</p>
+                                                </div>
+                                                <p className="my-1 px-2">{reply.reply}</p>
+                                            </div>
+                                        </div>
+                                        return fillReply
+                                        }
+                                        } else {
+                                            return null
+                                        }
+                                    })}
+                                    
                                 </div>
                             return test} else {
                                 const test =
-                                <div  key={comments._id} className=" my-2">
+                                <div  key={comments._id} className="mt-3 mb-2">
                                     <div className="mx-4 border rounded border-secondary">
                                         <div className="d-flex align-items-center border-bottom">
                                             <img style={{width: "18px", borderRadius: "50%"}} className="mx-1 my-1"src={comments.userImage === "" ? loginImage : comments.userImage} alt=""></img>
@@ -209,8 +255,45 @@ class Itineraries extends Component {
                                             <input name="reply" style={{width: "92%"}} type="text" 
                                                 className="form-control ml-2 my-1" placeholder="Write reply" 
                                                 value={this.state.reply} onChange={this.handleComment}/>
-                                            <img src={rightArrow} alt="rightArrow" style={{width: "8%"}} onClick={()=>this.handleCreateReply(comments._id)}/>
+                                            <img src={rightArrow} alt="rightArrow" style={{width: "8%"}} onClick={()=>this.handleCreateReply(comments)}/>
                                     </div>
+                                    {/* reply section*/}
+                                    {this.props.replies.map(reply=>{
+                                       if (reply.commentId === comments._id) {
+                                           
+                                        if (this.props.user._id === reply.userId) {
+                                            const fillReply =
+                                        <div  key={reply._id} className=" my-2">
+                                            <div className="ml-5 mr-4 border rounded border-secondary">
+                                                <div className="d-flex align-items-center border-bottom">
+                                                    <img style={{width: "18px", borderRadius: "50%"}} className="mx-1 my-1"src={reply.userImage === "" ? loginImage : reply.userImage } alt=""></img>
+                                                    <p className="my-0" style={{fontSize: "12px"}}>{reply.username}</p>
+                                                </div>
+                                                <p className="my-1 px-2">{reply.reply}</p>
+                                            </div>
+                                            <div className="ml-5 mr-4 d-flex align-items-center justify-content-around">
+                                                <img src={trash} className="mt-1" alt="trash" onClick={()=>this.deleteReply(reply, comments)}></img>
+                                                <div/><div/>
+                                            </div>
+                                        </div>
+                                        return fillReply
+                                        } else {
+                                        const fillReply =
+                                        <div  key={reply._id} className=" my-2">
+                                            <div className="ml-5 mr-4 border rounded border-secondary">
+                                                <div className="d-flex align-items-center border-bottom">
+                                                    <img style={{width: "18px", borderRadius: "50%"}} className="mx-1 my-1"src={reply.userImage === "" ? loginImage : reply.userImage } alt=""></img>
+                                                    <p className="my-0" style={{fontSize: "12px"}}>{reply.username}</p>
+                                                </div>
+                                                <p className="my-1 px-2">{reply.reply}</p>
+                                            </div>
+                                        </div>
+                                        return fillReply
+                                        }
+                                        } else {
+                                            return null
+                                        }
+                                    })}
                                 </div>
                                 return test
                             }
@@ -304,9 +387,7 @@ fillFavItinerary = (itinerary) => {
 }
 
 updateFavorites = (itinerary) => {
-    this.props.favItineraries(
-        itinerary
-    )
+    this.props.favItineraries(itinerary)
 }
 
     render() {
@@ -371,14 +452,16 @@ Itineraries.propTypes = {
     favItineraries: PropTypes.func.isRequired,
     fetchComments: PropTypes.func.isRequired,
     modifyComment: PropTypes.func.isRequired,
+    fetchReplies: PropTypes.func.isRequired,
     modifyReply: PropTypes.func.isRequired
 }
 
 const mapStateToProps = state => ({
     itineraries: state.itineraries.items,
     user: state.user.items,
-    comments: state.comments.items
+    comments: state.comments.items,
+    replies: state.replies.items
 })
 
 export default connect(mapStateToProps, { fetchItineraries, userLogedin, 
-    logoutUser, favItineraries, fetchComments, modifyComment, modifyReply })(Itineraries);
+    logoutUser, favItineraries, fetchComments, modifyComment, fetchReplies, modifyReply })(Itineraries);

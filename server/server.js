@@ -26,6 +26,7 @@ app.use('/cities', require('./routes/cities'))
 app.use('/itineraries', require('./routes/itinerary'))
 app.use('/users', require('./routes/user'))
 app.use('/comments', require('./routes/comments'))
+app.use('/replies', require('./routes/replies'))
 
 const passport = require('./passport');
 

@@ -1,12 +1,12 @@
 const express = require('express')
-const commentModel = require('../model/commentModel')
+const replyModel = require('../model/replyModel')
 const userModel = require('../model/userModel')
 const router = express.Router()
 const passport = require('passport')
 
 router.get('/get', (req, res) => {
     try{
-    commentModel.find({}).then((response)=>{
+    replyModel.find({}).then((response)=>{
         res.send(response)
     })}
     catch(err){
@@ -21,23 +21,24 @@ async(req, res) => {
     try{
     const userCheck = await userModel.findOne({email: req.user.email})
     if(userCheck.logedin===true && userCheck !== undefined) {
-    const newComment = new commentModel({
-        comment: req.body.comment,
+    const newReply = new replyModel({
+        reply: req.body.reply,
         userId: req.user._id,
         username: req.user.username,
         userImage: req.user.image,
-        itineraryId: req.body.itinerary
+        commentId: req.body.comment._id
     })
-
-    console.log(newComment)
-    newComment.save().then(()=>{
-        commentModel.find({}).then(response=> {
+    console.log(newReply)
+    newReply.save().then(()=>{
+        replyModel.find({}).then(response=> {
             res.send(response)
         })
     })
-} else{
-    res.json("no user found")
-}}
+
+    } else{
+        res.json("no user found")
+    }
+}
     catch(err){
         console.error(err.message);
         res.status(500).send('Server error')
@@ -48,11 +49,12 @@ router.post('/delete',
 passport.authenticate("jwt", { session: false }),
 async(req, res) => {
     try{
-
-    if(req.user._id == req.body.comment.userId) {
-        await commentModel.deleteOne({_id: req.body.comment._id})
+    console.log(req.user)
+    console.log(req.body.reply)
+    if(req.user._id == req.body.reply.userId) {
+        await replyModel.deleteOne({_id: req.body.reply._id})
     .then(()=>{
-        commentModel.find({}).then(response=> {
+        replyModel.find({}).then(response=> {
             res.send(response)
         })
     })
@@ -65,22 +67,5 @@ async(req, res) => {
     }
 });
 
-router.post('/edit', 
-passport.authenticate("jwt", { session: false }),
-async(req, res) => {
-    try{
-    commentModel.updateOne({_id: req.body.comment._id}, {$set:{
-        comment: req.body.itinerary
-      }}).then(response=> {
-        commentModel.find({}).then(response=> {
-            res.send(response)
-        })
-      })
-    }
-    catch(err){
-        console.error(err.message);
-        res.status(500).send('Server error')
-    }
-});
 
 module.exports = router
