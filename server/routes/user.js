@@ -9,6 +9,14 @@ const cors = require("cors");
 
 const key = require("../keys");
 const jwt = require("jsonwebtoken");
+const upload = require('../multer')
+
+const cloudinary = require("cloudinary");
+cloudinary.config({
+cloud_name: "dauygo7be",
+api_key: key.CLOUDINARY_API_KEY, 
+api_secret: key.CLOUDINARY_API_SECRET
+});
 
 router.get('/all',
     (req, res) => {
@@ -19,7 +27,7 @@ router.get('/all',
             .catch(err => console.log(err));
     });
 
-router.post('/register', [
+router.post('/register', upload.single("image"),[
     check('email').isEmail(),
     check('password').isLength({ min: 6}),
     check('username').isLength({max: 28})
@@ -29,16 +37,23 @@ router.post('/register', [
             return res.status(422).json({ errors: errors.array()});
         }
 
-    bcrypt.hash(req.body.password, 10).then((hash) => {
-    const newUser = new userModel({
-        username: req.body.username,
-        email: req.body.email,
-        password: hash,
-        image: req.body.image,
-        logedin: true,
-        itineraries: ""
-    })
-    newUser.save()
+    cloudinary.v2.uploader.upload(req.file.path, (err, result) => {
+      if(err) {
+          req.json(err.message);
+      }
+      req.body.image = result.secure_url;
+      
+      bcrypt.hash(req.body.password, 10).then((hash) => {
+        const newUser = new userModel({
+            username: req.body.username,
+            email: req.body.email,
+            password: hash,
+            image: req.body.image,
+            logedin: true,
+            itineraries: ""
+        })
+        
+        newUser.save()
       .then(user => {
       //res.send(user)
 
@@ -67,11 +82,12 @@ router.post('/register', [
                     });
                 }
             });
-
+        })
       })
       .catch(err => {
-      res.status(500).send("Server error" + err)}) 
-})
+        res.status(500).send("Server error" + err)}) 
+    })
+
 });
 
 router.post('/login', cors(), async(req,res) =>{

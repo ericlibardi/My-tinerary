@@ -24,15 +24,13 @@ export const loginUser = (email, password) => async dispatch => {
 }
 
 
-export const createUser = (username, email, password, image) => async dispatch => {
+export const createUser = (data) => async dispatch => {
   const config = {headers: {
     'Content-Type': 'application/json'
   }}
-  const body = JSON.stringify({username, email, password, image})
-  console.log(body)
 
   try{
-    const response = await axios.post('http://localhost:5000/users/register', body, config)
+    const response = await axios.post('http://localhost:5000/users/register', data, config)
     dispatch ({
       type: POST_USER,
       payload: response.data
@@ -104,4 +102,9 @@ export const favItineraries = (itinerary) => async dispatch => {
   console.log(response.data)
   dispatch (getUser())
 
+}
+
+export const uploadImage = (data) => async dispatch => {
+  const response = await axios.post('http://localhost:5000/images/add', data)
+  console.log(response)
 }

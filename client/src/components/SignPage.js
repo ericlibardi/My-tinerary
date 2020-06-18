@@ -14,7 +14,7 @@ class SignPage extends Component {
             username: "",
             email: "",
             password: "",
-            urlPicture: ""
+            image: ""
         }
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this)
@@ -34,19 +34,25 @@ class SignPage extends Component {
         })
     }
 
+    onChangeImage = event => {
+        this.setState({
+            image: event.target.files[0],
+            loaded: 0,
+        })
+    }
+
     handleSubmit(event) {
-        const username = this.state.username;
-        const email = this.state.email;
-        const password = this.state.password;
-        const image = this.state.urlPicture;
 
         event.preventDefault();
         
-        this.props.createUser(
-            username, email, password, image
-        )
-        this.props.history.push("/")
+        const formData = new FormData() 
+        formData.append('username', this.state.username)
+        formData.append('email', this.state.email)
+        formData.append('password', this.state.password)
+        formData.append('image', this.state.image)
+        this.props.createUser(formData);
 
+        this.props.history.push("/")
     }
 
     checkUser = async() => {
@@ -60,7 +66,7 @@ class SignPage extends Component {
     render() {
         console.log(this.state.email)
         console.log(this.state.password)
-        console.log(this.state.urlPicture)
+        console.log(this.state.image)
         console.log(this.state.username)
 
           const popover = (
@@ -86,18 +92,13 @@ class SignPage extends Component {
                     <Nav className="ml-auto">
                         <Nav.Link href="/" className="ml-auto font-weight-bold text-white">Home</Nav.Link>
                         <Nav.Link href="/cities" className="ml-auto font-weight-bold text-white">Cities</Nav.Link>
-                        {/* <NavDropdown title="Dropdown" id="basic-nav-dropdown">
-                            <NavDropdown.Item href="#action/3.1">Action</NavDropdown.Item>
-                            <NavDropdown.Item href="#action/3.2">Another action</NavDropdown.Item>
-                            <NavDropdown.Item href="#action/3.3">Something</NavDropdown.Item>
-                        </NavDropdown> */}
                     </Nav>
                 </Navbar.Collapse>
             </Navbar>
             <div className="mt-3 mx-auto px-2" style={{maxWidth: "590px"}}>
                 <h6 className="mb-3 font-weight-bold">Register on MYtinerary</h6>
-                <form className="d-flex flex-column mx-auto " onSubmit={this.handleSubmit}
-                style={{width: "65%"}}>
+                <form className="d-flex flex-column mx-auto" onSubmit={this.handleSubmit}
+                encType='multipart/form-data' style={{width: "65%"}}>
                     <label className="my-2">
                         <p className="my-1">username:</p>
                         <input name="username" type="username" style={{width: "100%"}}
@@ -118,9 +119,8 @@ class SignPage extends Component {
                     </label>
                     <label className="my-2">
                         <p className="my-1">Picture:</p>
-                        <input name="urlPicture" type="url" style={{width: "100%"}}
-                        className="form-control border border-dark"
-                        value={this.state.urlPicture} onChange={this.handleChange}/>
+                        <input name="image" type="file" style={{width: "100%"}}
+                        onChange={this.onChangeImage}/>
                     </label>
                     <input className="mt-4 btn btn-success" type="submit" value="Submit" />
                 </form>

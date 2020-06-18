@@ -7,6 +7,7 @@ import Cities from './components/Cities'
 import Itineraries from './components/Itinerary'
 import Login from './components/Login'
 import SignIn from './components/SignPage'
+import Test from './components/Test'
 
 export default class App extends Component {
     render() {
@@ -19,6 +20,7 @@ export default class App extends Component {
               <Route path='/itineraries' component={Itineraries} />
               <Route path='/login' component={Login} />
               <Route path='/signin' component={SignIn} />
+              <Route path='/test' component={Test} />
             </Switch>
           </div>
         </BrowserRouter>
